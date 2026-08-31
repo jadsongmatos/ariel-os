@@ -1,0 +1,7 @@
+defaults:
+  apps:
+    context:
+      - ariel-os
+
+subdirs:
+  - avr-blinky

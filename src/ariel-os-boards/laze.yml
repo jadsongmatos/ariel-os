@@ -22,6 +22,11 @@ builders:
     CARGO_ENV:
     - CONFIG_VBUS_DETECTION=false
     - CONFIG_SWI=USART2
+- name: arduino-uno-board
+  parent: atmega328p
+  provides:
+  - has_leds
+
 - name: bbc-microbit-v1
   parent: nrf51822-xxaa
   provides:

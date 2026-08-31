@@ -86,6 +86,8 @@ pub mod input {
 
     pub trait InputPin {}
 
+    impl<T> InputPin for T {}
+
     pub fn new<'a, T: InputPin>(
         _pin: impl IntoPeripheral<'a, T>,
         _pull: ariel_os_embassy_common::gpio::Pull,
@@ -124,6 +126,8 @@ pub mod output {
     pub const SPEED_CONFIGURABLE: bool = false;
 
     pub trait OutputPin {}
+
+    impl<T> OutputPin for T {}
 
     pub fn new<'a, T: OutputPin>(
         _pin: impl IntoPeripheral<'a, T>,

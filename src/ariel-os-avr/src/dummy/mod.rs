@@ -21,7 +21,7 @@
 mod executor;
 
 #[doc(hidden)]
-pub mod gpio;
+
 
 #[doc(hidden)]
 pub mod peripheral;
@@ -52,7 +52,14 @@ pub use peripheral::{IntoPeripheral, OptionalPeripherals};
 #[must_use]
 pub fn init() -> OptionalPeripherals {
     embassy_avr::time_driver::init();
-    OptionalPeripherals
+    #[cfg(feature = "arduino-uno")]
+    {
+        OptionalPeripherals { PB5: None }
+    }
+    #[cfg(not(feature = "arduino-uno"))]
+    {
+        OptionalPeripherals
+    }
 }
 
 #[doc(hidden)]

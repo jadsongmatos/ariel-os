@@ -5,6 +5,7 @@ defaults:
 
 subdirs:
   - alloc
+  - avr-print-minimal
   - benchmark
   - ble-advertiser
   - ble-scanner

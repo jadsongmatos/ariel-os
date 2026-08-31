@@ -1,0 +1,4 @@
+apps:
+  - name: avr-blinky
+    selects:
+      - has_leds

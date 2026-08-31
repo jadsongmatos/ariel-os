@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+
+[package]
+name = "avr-blinky"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+static_cell = "2"
+embassy-executor = { path = "../../../embassy/embassy-executor", features = ["nightly", "arch-avr", "executor-thread", "integrated-timers", "atmega328p"] }
+embassy-time = { path = "../../../embassy/embassy-time", default-features = false, features = ["tick-hz-1_000"] }
+embassy-avr = { path = "../../../embassy/embassy-avr", features = ["device-atmega328p", "time-driver-tc0"] }
+
+[lints.rust]
+unsafe_code = "allow"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

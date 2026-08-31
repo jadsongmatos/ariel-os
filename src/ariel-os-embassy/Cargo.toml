@@ -76,6 +76,7 @@ embedded-io = { workspace = true }
 embassy-executor = { workspace = true, default-features = false, features = [
   "arch-avr",
   "executor-thread",
+  "nightly",
 ] }
 embassy-avr = { workspace = true }
 

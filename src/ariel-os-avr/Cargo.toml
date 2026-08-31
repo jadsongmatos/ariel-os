@@ -13,6 +13,7 @@ ariel-os-utils = { workspace = true }
 
 embassy-executor = { workspace = true, default-features = false, features = [
   "arch-avr",
+  "nightly",
 ] }
 embassy-time = { workspace = true }
 embassy-time-queue-utils = { workspace = true }
@@ -57,6 +58,9 @@ random = ["dep:ariel-os-random"]
 threading = []
 
 executor-thread = ["threading"]
+
+## Enables Arduino Uno board support (pin definitions from embassy-avr).
+arduino-uno = ["embassy-avr/arduino-uno"]
 
 ## Enables defmt support.
 defmt = [

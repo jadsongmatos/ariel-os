@@ -7,7 +7,7 @@
 pub use ariel_os_embassy_common::cell;
 pub use ariel_os_hal::hal;
 
-#[cfg(feature = "executor-thread")]
+#[cfg(all(feature = "executor-thread", not(target_arch = "avr")))]
 use ariel_os_embassy_common::executor_thread;
 
 #[cfg(feature = "debug-uart")]
@@ -36,11 +36,16 @@ mod cellular_networking;
 
 use ariel_os_log::debug;
 
+#[cfg(not(target_arch = "avr"))]
 use linkme::distributed_slice;
 
 // All items of this module are re-exported at the root of `ariel_os`.
 pub mod api {
-    pub use crate::{EMBASSY_TASKS, asynch, delegate};
+    pub use crate::{asynch, delegate};
+    #[cfg(not(target_arch = "avr"))]
+    pub use crate::EMBASSY_TASKS;
+    #[cfg(target_arch = "avr")]
+    pub use crate::register_embassy_task;
 
     pub mod cell {
         //! Shareable containers.
@@ -101,6 +106,7 @@ pub mod reexports {
     // Used by macros for task autostarting.
     // (In most applications, it'd suffice to have this in ariel-os, but not when an internal crate
     // does an autostart)
+    #[cfg(not(target_arch = "avr"))]
     pub use linkme;
 }
 
@@ -141,8 +147,40 @@ pub mod thread_executor;
 pub type Task = fn(asynch::Spawner, &mut hal::OptionalPeripherals);
 
 #[doc(hidden)]
+#[cfg(not(target_arch = "avr"))]
 #[distributed_slice]
 pub static EMBASSY_TASKS: [Task] = [..];
+
+/// Maximum number of statically-registered embassy tasks (AVR runtime).
+const EMBASSY_TASKS_MAX: usize = 16;
+
+/// Runtime array of embassy tasks, populated by `.ctors` registration on AVR.
+#[cfg(target_arch = "avr")]
+#[allow(static_mut_refs)]
+static mut EMBASSY_TASKS_BUF: [Option<Task>; EMBASSY_TASKS_MAX] = [None; EMBASSY_TASKS_MAX];
+
+/// Number of embassy tasks registered so far (AVR runtime).
+#[cfg(target_arch = "avr")]
+static EMBASSY_TASKS_LEN: core::sync::atomic::AtomicUsize = core::sync::atomic::AtomicUsize::new(0);
+
+/// Register an embassy task at startup (called from .ctors registration on AVR).
+#[cfg(target_arch = "avr")]
+pub fn register_embassy_task(task: Task) {
+    let idx = EMBASSY_TASKS_LEN.load(core::sync::atomic::Ordering::Relaxed);
+    if idx < EMBASSY_TASKS_MAX {
+        unsafe {
+            EMBASSY_TASKS_BUF[idx] = Some(task);
+        }
+        EMBASSY_TASKS_LEN.store(idx + 1, core::sync::atomic::Ordering::Relaxed);
+    }
+}
+
+/// Iterate registered embassy tasks (AVR runtime).
+#[cfg(target_arch = "avr")]
+pub(crate) fn embassy_tasks() -> impl Iterator<Item = Task> {
+    let len = EMBASSY_TASKS_LEN.load(core::sync::atomic::Ordering::Relaxed);
+    (0..len).filter_map(move |i| unsafe { EMBASSY_TASKS_BUF[i] })
+}
 
 #[cfg(all(
     context = "ariel-os",
@@ -206,7 +244,25 @@ fn init() {
     not(feature = "threading"),
     context = "avr"
 ))]
-#[distributed_slice(ariel_os_rt::INIT_FUNCS)]
+#[unsafe(link_section = ".ctors")]
+#[used]
+static __AVR_INIT_CTOR: unsafe extern "C" fn() = __ariel_os_reg_init;
+
+#[cfg(all(
+    feature = "executor-thread",
+    not(feature = "threading"),
+    context = "avr"
+))]
+#[allow(non_snake_case)]
+unsafe extern "C" fn __ariel_os_reg_init() {
+    ariel_os_rt::register_init_func(init);
+}
+
+#[cfg(all(
+    feature = "executor-thread",
+    not(feature = "threading"),
+    context = "avr"
+))]
 pub(crate) fn init() {
     debug!("ariel-os-embassy::init(): using embassy-executor thread mode (AVR)");
     let p = hal::init();
@@ -226,7 +282,7 @@ pub(crate) fn init() {
 #[embassy_executor::task]
 async fn init_task(mut peripherals: hal::OptionalPeripherals) {
     // SAFETY: this is executed in a non-public task using only Embassy executors.
-    let spawner = unsafe { asynch::Spawner::for_current_executor().await };
+    let spawner = asynch::Spawner::for_current_executor().await;
     asynch::set_spawner(spawner.make_send());
 
     #[cfg(feature = "debug-uart")]
@@ -273,7 +329,13 @@ async fn init_task(mut peripherals: hal::OptionalPeripherals) {
 
     // Tasks have to be started before driver initializations so that the tasks are able to
     // configure the drivers using hooks.
+    #[cfg(not(target_arch = "avr"))]
     for task in EMBASSY_TASKS {
+        task(spawner, &mut peripherals);
+    }
+
+    #[cfg(target_arch = "avr")]
+    for task in embassy_tasks() {
         task(spawner, &mut peripherals);
     }
 

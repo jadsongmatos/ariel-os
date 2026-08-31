@@ -83,16 +83,30 @@ pub fn spawner(args: TokenStream, item: TokenStream) -> TokenStream {
         quote! {}
     };
 
+    let reg_ident = format_ident!("__ariel_os_ctor_{new_function_name}");
+    let reg_fn = format_ident!("__ariel_os_reg_{new_function_name}");
+
     let expanded = quote! {
         #[allow(non_snake_case)]
-        #[#ariel_os_crate::reexports::linkme::distributed_slice(#ariel_os_crate::EMBASSY_TASKS)]
-        #[linkme(crate = #ariel_os_crate::reexports::linkme)]
+        #[cfg_attr(not(target_arch = "avr"), #ariel_os_crate::reexports::linkme::distributed_slice(#ariel_os_crate::EMBASSY_TASKS))]
+        #[cfg_attr(not(target_arch = "avr"), linkme(crate = #ariel_os_crate::reexports::linkme))]
         fn #new_function_name(
             spawner: #ariel_os_crate::asynch::Spawner,
             mut peripherals: &mut #ariel_os_crate::hal::OptionalPeripherals,
         ) {
             use #ariel_os_crate::hal::define_peripherals::TakePeripherals;
             #spawner_function_name(spawner #peripheral_param);
+        }
+
+        #[cfg(target_arch = "avr")]
+        #[unsafe(link_section = ".ctors")]
+        #[used]
+        static #reg_ident: unsafe extern "C" fn() = #reg_fn;
+
+        #[cfg(target_arch = "avr")]
+        #[allow(non_snake_case)]
+        unsafe extern "C" fn #reg_fn() {
+            #ariel_os_crate::register_embassy_task(#new_function_name);
         }
 
         #spawner_function

@@ -50,6 +50,21 @@ cfg_select! {
     context = "stm32" => {
         pub use ariel_os_stm32::*;
     }
+    context = "avr" => {
+        mod dummy;
+        // Use ariel-os-avr's peripheral module as hal::peripheral (has Peri + IntoPeripheral)
+        pub use ariel_os_avr::peripheral;
+        // Re-export IntoPeripheral at hal level for gpio.rs
+        pub use ariel_os_avr::peripheral::IntoPeripheral;
+        // Real GPIO driver for AVR
+        pub use ariel_os_avr::gpio;
+        // SWI and identity still use dummy stubs
+        pub use dummy::{SWI, identity};
+        // Pin types (PB5, etc.)
+        pub use ariel_os_avr::peripherals;
+        // init and OptionalPeripherals
+        pub use ariel_os_avr::{init, OptionalPeripherals};
+    }
     context = "ariel-os" => {
         compile_error!("this MCU family is not supported");
     }

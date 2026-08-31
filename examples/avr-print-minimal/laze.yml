@@ -1,0 +1,4 @@
+apps:
+  - name: avr-print-minimal
+    selects:
+      - has_leds

@@ -33,10 +33,27 @@ embassy-net = { git = "https://github.com/ariel-os/embassy", rev = "37683fe299f1
 embassy-rp = { git = "https://github.com/ariel-os/embassy", rev = "0314802282e112a47b4ccb303c0e7f09cf33df53" }
 # branch = "embassy-stm32-v0.4.0+ariel-os"
 embassy-stm32 = { git = "https://github.com/ariel-os/embassy", rev = "1b75c3d6e61a99a312e2d12f039fa6e76e9c3a9c" }
-# branch = "embassy-time-v0.5.1+ariel-os"
-embassy-time = { git = "https://github.com/ariel-os/embassy", rev = "3c1b5fbf28237ea7144ae970c3aec11c38023c3f" }
+# branch = "embassy-time-v0.5.1+ariel-os" - use local fork path for consistency with embassy-avr
+embassy-time = { path = "/home/jadson/Documentos/uno/embassy/embassy-time" }
+# branch = "embassy-time-v0.5.1+ariel-os" - use local fork path for consistency with embassy-avr
+embassy-time-driver = { path = "/home/jadson/Documentos/uno/embassy/embassy-time-driver" }
+# Use local fork path for consistency (avoids links conflict with local embassy-time)
+embassy-time-queue-utils = { path = "/home/jadson/Documentos/uno/embassy/embassy-time-queue-driver" }
 # branch = "embassy-usb-synopsys-otg-v0.3.1+ariel-os
 embassy-usb-synopsys-otg = { git = "https://github.com/ariel-os/embassy", rev = "478df29985c8e0d0ff2e915440c8ca15e36f4403" }
+# ariel-os embassy-avr fork
+embassy-avr = { path = "/home/jadson/Documentos/uno/embassy/embassy-avr" }
+# ariel-os embassy-executor fork (for AVR arch support)
+embassy-executor = { path = "/home/jadson/Documentos/uno/embassy/embassy-executor" }
+# ariel-os embassy-usb fork (for AVR - older version without AtomicU32 issues)
+embassy-usb = { path = "/home/jadson/Documentos/uno/embassy/embassy-usb" }
+embassy-usb-driver = { path = "/home/jadson/Documentos/uno/embassy/embassy-usb-driver" }
+embassy-usb-dfu = { path = "/home/jadson/Documentos/uno/embassy/embassy-usb-dfu" }
+embassy-usb-logger = { path = "/home/jadson/Documentos/uno/embassy/embassy-usb-logger" }
+# Force avr-device to 0.8.1 to avoid multiple versions (0.6.0, 0.7.0, 0.8.1) 
+# where 0.7.0 fails without chip feature
+avr-device = { git = "https://github.com/rahix/avr-device", tag = "v0.8.1" }
+
 # ariel-os esp-hal fork, using branch = "esp-hal-v1.0.0+20251203+ariel-os"
 esp-alloc = { git = "https://github.com/ariel-os/esp-hal", rev = "531c629afdd80ea464682ce7f4db8baed97967a6" }
 esp-bootloader-esp-idf = { git = "https://github.com/ariel-os/esp-hal", rev = "531c629afdd80ea464682ce7f4db8baed97967a6" }

@@ -17,16 +17,11 @@ fn main() {
     let out = &PathBuf::from(env::var_os("OUT_DIR").unwrap());
 
     if let Some(context) = context_any(&["esp32c3", "cortex-m", "riscv"]) {
-        let insert_somewhere = match context {
-            "esp32c3" => "INSERT AFTER .rwdata_dummy;",
-            "cortex-m" => "INSERT BEFORE .data;",
-            "riscv" => "INSERT BEFORE .trap;",
-            _ => "",
-        };
-
-        let region = match context {
-            "cortex-m" => "RAM",
-            "riscv" | "esp32c3" => "RWDATA",
+        let (insert_somewhere, region) = match context {
+            "esp32c3" => ("INSERT AFTER .rwdata_dummy;", "RWDATA"),
+            "cortex-m" => ("INSERT BEFORE .data;", "RAM"),
+            "riscv" => ("INSERT BEFORE .trap;", "RWDATA"),
+            
             _ => unreachable!(),
         };
 
@@ -62,6 +57,7 @@ fn main() {
     std::fs::copy("linkme.x", out.join("linkme.x")).unwrap();
     std::fs::copy("eheap.x", out.join("eheap.x")).unwrap();
     std::fs::copy("keep-stack-sizes.x", out.join("keep-stack-sizes.x")).unwrap();
+
 
     #[cfg(feature = "memory-x")]
     write_memoryx();
@@ -100,6 +96,12 @@ fn write_memoryx() {
         } else {
             (ram, flash)
         }
+    } else if context("avr") {
+        // ATmega328P: 2 KB SRAM, 32 KB Flash
+        // AVR Harvard architecture: separate address spaces
+        // RAM starts at 0x0100 (after 32 registers + 160 I/O registers)
+        // Flash starts at 0x0000
+        (2, 32)
     } else {
         panic!("please set the MCU laze context");
     };
@@ -108,6 +110,11 @@ fn write_memoryx() {
         (2048, 0x2100_0000, 0x0100_0000)
     } else if cfg!(feature = "nrf91-modem") {
         (4096, 0x2000_0000 + NRF91_MODEM_IPC_KB * 1024, 0)
+    } else if context("avr") {
+        // ATmega328P: Flash page size is 128 bytes (SPM pages)
+        // RAM starts at 0x0100 (0x0000-0x001F = 32 registers, 0x0020-0x00FF = 160 I/O)
+        // Flash starts at 0x0000
+        (128, 0x0100, 0x0000)
     } else {
         (4096, 0x2000_0000, 0)
     };

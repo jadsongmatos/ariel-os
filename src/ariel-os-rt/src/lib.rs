@@ -5,7 +5,7 @@
 #![deny(missing_docs)]
 #![allow(incomplete_features)]
 #![allow(unsafe_code)]
-#![cfg_attr(context = "xtensa", feature(asm_experimental_arch))]
+#![cfg_attr(any(context = "xtensa", context = "avr"), feature(asm_experimental_arch))]
 
 pub mod stack;
 
@@ -138,7 +138,13 @@ mod isr_stack {
 
 #[cfg(all(
     feature = "_panic-handler",
-    any(context = "esp", context = "nrf", context = "rp", context = "stm32"),
+    any(
+        context = "esp",
+        context = "nrf",
+        context = "rp",
+        context = "stm32",
+        context = "avr",
+    ),
 ))]
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
@@ -151,11 +157,17 @@ fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
     loop {}
 }
 
+#[cfg(not(target_arch = "avr"))]
 use linkme::distributed_slice;
 
+#[cfg(not(target_arch = "avr"))]
 #[doc(hidden)]
 #[distributed_slice]
 pub static INIT_FUNCS: [fn()] = [..];
+
+/// On AVR, .ctors registration functions call this to populate the runtime array.
+#[cfg(target_arch = "avr")]
+pub use arch::register_init_func;
 
 #[inline]
 #[cfg_attr(not(context = "ariel-os"), allow(dead_code))]
@@ -181,7 +193,13 @@ fn startup() -> ! {
     #[cfg(test)]
     debug!("ariel_os_rt::startup() cfg(test)");
 
+    #[cfg(not(target_arch = "avr"))]
     for f in INIT_FUNCS {
+        f();
+    }
+
+    #[cfg(target_arch = "avr")]
+    for f in arch::init_funcs() {
         f();
     }
 

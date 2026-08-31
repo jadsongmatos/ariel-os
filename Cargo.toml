@@ -88,11 +88,13 @@ embassy-net-driver-channel = { version = "0.3.2", default-features = false }
 embassy-nrf = { version = "0.8.0", default-features = false }
 embassy-rp = { version = "0.8", default-features = false }
 embassy-stm32 = { version = "0.4", default-features = false }
+panic-halt = { version = "1.0", default-features = false }
 embassy-sync = { version = "0.7.2", default-features = false }
 embassy-time = { version = "0.5.1", default-features = false }
 embassy-time-driver = { version = "0.2.2", default-features = false }
 embassy-time-queue-utils = { version = "0.3.0", default-features = false }
 embassy-usb = { version = "0.6.0", default-features = false }
+embassy-avr = { path = "/home/jadson/Documentos/uno/embassy/embassy-avr", default-features = false, features = ["device-atmega328p", "time-driver-tc0"] }
 
 embedded-hal = { version = "1.0.0", default-features = false }
 embedded-hal-async = { version = "1.0.0", default-features = false }
@@ -113,6 +115,7 @@ esp-hal = { version = "~1.0.0", default-features = false, features = [
 esp-metadata-generated = { version = "0.3.0", default-features = false }
 esp-println = { version = "0.16.0", default-features = false }
 esp-radio = { version = "0.17.0", default-features = false }
+avr-device = { version = "0.8.1", default-features = false, features = ["rt"] }
 esp-radio-rtos-driver = { version = "0.2.0", default-features = false }
 esp-rom-sys = { version = "0.1.2", default-features = false }
 esp-sync = { version = "0.1.0", default-features = false }
@@ -152,6 +155,7 @@ ariel-os-stm32 = { path = "src/ariel-os-stm32" }
 ariel-os-storage = { path = "src/ariel-os-storage" }
 ariel-os-threads = { path = "src/ariel-os-threads" }
 ariel-os-utils = { path = "src/ariel-os-utils", default-features = false }
+ariel-os-avr = { path = "src/ariel-os-avr", default-features = false }
 
 # Built-in sensor drivers.
 ariel-os-sensor-aht20 = { path = "src/sensors/ariel-os-sensor-aht20" }

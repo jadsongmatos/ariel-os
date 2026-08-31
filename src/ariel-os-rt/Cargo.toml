@@ -49,6 +49,7 @@ cortex-m = { workspace = true, features = ["critical-section-single-core"] }
 
 [target.'cfg(context = "avr")'.dependencies]
 avr-device = { workspace = true, features = ["rt"] }
+panic-halt = { workspace = true }
 
 # Enable atmega328p device support when building for atmega328p context
 [target.'cfg(all(context = "avr", context = "atmega328p"))'.dependencies]

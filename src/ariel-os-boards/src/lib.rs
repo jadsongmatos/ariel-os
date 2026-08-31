@@ -63,5 +63,5 @@ cfg_if::cfg_if! {
     "stm32u083c-dk")] { include!("stm32u083c-dk.rs"); } else if #[cfg(context =
     "ulanzi-tc001")] { include!("ulanzi-tc001.rs"); } else if #[cfg(context =
     "unihiker-k10")] { include!("unihiker-k10.rs"); } else if #[cfg(context =
-    "waveshare-esp32-s3-matrix")] { include!("waveshare-esp32-s3-matrix.rs"); } else {}
+    "waveshare-esp32-s3-matrix")] { include!("waveshare-esp32-s3-matrix.rs"); } else if #[cfg(context = "arduino-uno-board")] { include!("arduino-uno.rs"); } else {}
 }

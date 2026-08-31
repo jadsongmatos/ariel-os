@@ -371,17 +371,31 @@ contexts:
     provides:
       - has_device_identity
     env:
-      global:
-        RUSTC_TARGET: avr-none
-        CARGO_TARGET_PREFIX: CARGO_TARGET_AVR_NONE
-        RUSTFLAGS:
-          - --cfg context="avr"
-          - -C target-cpu=atmega328p
-        CARGO_WRAPPER: ""
-        # Force build-std because the AVR target's core/alloc are not pre-built
-        # in some installations.
-        CARGO_ARGS:
-          - -Zbuild-std=core,alloc
+      RUSTC_TARGET: avr-none
+      CARGO_TARGET_PREFIX: CARGO_TARGET_AVR_NONE
+      RUSTFLAGS:
+        - --cfg context=\"avr\"
+        - -C target-cpu=atmega328p
+        - -C panic=abort
+        # avr-libc 2.3.2 / avr-gcc 16 on this system doesn't put
+        # crt<s>.o / libm / libc on the default search path.
+        - -Clink-args=-B/usr/lib/avr/lib/avr5
+        # nightly executor path (embassy-executor/nightly) generates
+        # `type Fut = impl Future` in task trait impls; TAIT is unstable and
+        # needs this gate on every crate in the AVR build.
+        - -Zcrate-attr=feature(impl_trait_in_assoc_type)
+        # Option B: linkme is NOT used on AVR.  Task/init registration uses
+        # .ctors + .init6 (LPM/ICALL) instead of linkme::distributed_slice.
+        # The stock avr5.x linker script from avr-libc handles .ctors natively.
+      CARGO_WRAPPER: ""
+      # No `cargo run` support for AVR; a no-op runner keeps
+      # CARGO_TARGET_AVR_NONE_RUNNER valid for cargo config parsing.
+      CARGO_RUNNER:
+        - "true"
+      # Force build-std because the AVR target's core/alloc are not pre-built
+      # in some installations.
+      CARGO_ARGS:
+        - -Zbuild-std=core,alloc
 
   - name: atmega328p
     parent: avr
@@ -389,9 +403,10 @@ contexts:
       - has_leds
       - has_storage_support
     env:
-      global:
-        RUSTFLAGS:
-          - --cfg context="atmega328p"
+      RUSTFLAGS:
+        - --cfg context=\"atmega328p\"
+      FEATURES:
+        - ariel-os/arduino-uno
 
   - name: arduino-uno
     help: Arduino Uno (ATmega328P, 16 MHz, 32 KB flash, 2 KB SRAM)

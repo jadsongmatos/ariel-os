@@ -7,6 +7,7 @@ pub fn main() {
     println!(
         "cargo::rustc-check-cfg=cfg(context, values(\"adafruit-feather-nrf52840-sense\"))"
     );
+    println!("cargo::rustc-check-cfg=cfg(context, values(\"arduino-uno-board\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"arduino-uno-q\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"bbc-microbit-v1\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"bbc-microbit-v2\"))");

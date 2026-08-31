@@ -31,8 +31,13 @@ ariel-os-rp = { path = "../ariel-os-rp" }
 [target.'cfg(context = "stm32")'.dependencies]
 ariel-os-stm32 = { workspace = true }
 
+[target.'cfg(context = "avr")'.dependencies]
+ariel-os-avr = { path = "../ariel-os-avr", features = ["arduino-uno"] }
+embassy-avr = { workspace = true, features = ["arduino-uno"] }
+embassy-executor = { workspace = true }
+
 # Required for platform-independent tooling
-[target.'cfg(not(any(context = "esp", context = "nrf", context = "rp", context = "stm32")))'.dependencies]
+[target.'cfg(not(any(context = "esp", context = "nrf", context = "rp", context = "stm32", context = "avr")))'.dependencies]
 embassy-executor = { workspace = true }
 embassy-hal-internal = { workspace = true }
 embassy-usb = { workspace = true }
@@ -52,6 +57,7 @@ external-interrupts = [
   "ariel-os-nrf/external-interrupts",
   "ariel-os-rp/external-interrupts",
   "ariel-os-stm32/external-interrupts",
+  "ariel-os-avr/external-interrupts",
 ]
 
 i2c = [
@@ -63,6 +69,7 @@ i2c = [
   "ariel-os-nrf/i2c",
   "ariel-os-rp/i2c",
   "ariel-os-stm32/i2c",
+  "ariel-os-avr/i2c",
 ]
 
 spi = [
@@ -71,6 +78,7 @@ spi = [
   "ariel-os-nrf/spi",
   "ariel-os-rp/spi",
   "ariel-os-stm32/spi",
+  "ariel-os-avr/spi",
 ]
 
 ## Enables a time driver, and functionality requiring `embassy-time`.
@@ -79,6 +87,7 @@ time = [
   "ariel-os-nrf/time",
   "ariel-os-rp/time",
   "ariel-os-stm32/time",
+  "ariel-os-avr/time",
 ]
 
 uart = [
@@ -87,6 +96,7 @@ uart = [
   "ariel-os-nrf/uart",
   "ariel-os-rp/uart",
   "ariel-os-stm32/uart",
+  "ariel-os-avr/uart",
 ]
 
 usb = [
