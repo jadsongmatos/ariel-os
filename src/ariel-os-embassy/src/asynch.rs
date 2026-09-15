@@ -12,7 +12,7 @@ use embassy_sync::blocking_mutex::CriticalSectionMutex;
 pub use embassy_executor::{SendSpawner, Spawner};
 pub use embassy_futures::yield_now;
 
-#[cfg(feature = "executor-thread")]
+#[cfg(all(feature = "executor-thread", feature = "threading"))]
 pub use crate::thread_executor;
 
 pub(crate) static SPAWNER: CriticalSectionMutex<OnceCell<SendSpawner>> =

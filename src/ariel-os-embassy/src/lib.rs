@@ -141,7 +141,9 @@ pub use net::NetworkStack;
 pub mod asynch;
 pub mod delegate;
 
-#[cfg(feature = "executor-thread")]
+// This executor runs on an Ariel OS thread, so it requires the threading runtime. AVR selects
+// `executor-thread` without it and runs the `embassy-executor` thread mode executor directly.
+#[cfg(all(feature = "executor-thread", feature = "threading"))]
 pub mod thread_executor;
 
 pub type Task = fn(asynch::Spawner, &mut hal::OptionalPeripherals);
