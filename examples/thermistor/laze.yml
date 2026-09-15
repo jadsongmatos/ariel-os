@@ -1,0 +1,12 @@
+apps:
+  - name: thermistor
+    context:
+      - avr
+
+modules:
+  - name: internal-pull-up
+    help: use the ATmega328P internal pull-up on A0 instead of an external resistor
+    env:
+      global:
+        FEATURES:
+          - internal-pull-up

@@ -29,6 +29,7 @@ subdirs:
   - tcp-client
   - tcp-echo
   - testing
+  - thermistor
   - thermometer
   - thread-async-interop
   - threading

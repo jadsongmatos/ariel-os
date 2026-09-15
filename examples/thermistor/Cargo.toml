@@ -1,0 +1,18 @@
+[package]
+name = "thermistor"
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+ariel-os = { path = "../../src/ariel-os" }
+ariel-os-boards = { path = "../../src/ariel-os-boards" }
+embassy-avr = { workspace = true, features = ["arduino-uno"] }
+ufmt = "0.2.0"
+
+[features]
+## Uses the ATmega328P internal pull-up on `A0` instead of an external resistor.
+internal-pull-up = []
+
+[lints]
+workspace = true
