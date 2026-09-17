@@ -1,28 +1,20 @@
 use embassy_executor::Spawner;
 use embassy_nrf::peripherals;
-use embassy_sync::{
-    blocking_mutex::raw::CriticalSectionRawMutex, mutex::Mutex, once_lock::OnceLock,
-};
+
 use nrf_sdc::{
     self as sdc, SoftdeviceController,
     mpsl::{self, MultiprotocolServiceLayer},
 };
 
 use static_cell::StaticCell;
-use trouble_host::{Stack, prelude::DefaultPacketPool};
 
-use ariel_os_embassy_common::{ble::MTU, cell::SameExecutorCell};
+use ariel_os_embassy_common::ble::MTU;
 use ariel_os_log::debug;
 
 use crate::{irqs::Irqs, peripheral::Peri};
 
-pub type BleStack = Stack<'static, SoftdeviceController<'static>, DefaultPacketPool>;
+pub type BleController = SoftdeviceController<'static>;
 
-static STACK: StaticCell<SameExecutorCell<BleStack>> = StaticCell::new();
-// The stack can effectively only be taken by a single application; once taken, the Option is None.
-static STACKREF: OnceLock<
-    Mutex<CriticalSectionRawMutex, Option<&'static mut SameExecutorCell<BleStack>>>,
-> = OnceLock::new();
 static MPSL: StaticCell<MultiprotocolServiceLayer<'_>> = StaticCell::new();
 static SDC_MEM: StaticCell<sdc::Mem<SDC_MEM_SIZE>> = StaticCell::new();
 static RNG: StaticCell<ariel_os_random::CryptoRngSend> = StaticCell::new();
@@ -66,24 +58,6 @@ const SDC_MEM_SIZE: usize = 6080;
 const L2CAP_TXQ: u8 = 3;
 // Size of the RX buffer (number of packets), minimum is 1, SoftDevice default is 2 (SDC_DEFAULT_RX_PACKET_COUNT).
 const L2CAP_RXQ: u8 = 2;
-
-/// Returns the system ble stack.
-///
-/// # Panics
-/// - panics if the stack was already taken
-/// - panics when not called from the main executor
-pub async fn ble_stack() -> &'static mut BleStack {
-    STACKREF
-        .get()
-        .await
-        .try_lock()
-        .expect("Two tasks racing for lock, one would fail the main-executor check")
-        .take()
-        .expect("Stack was already taken")
-        .get_mut_async()
-        .await
-        .expect("Stack needs to be taken from main executor")
-}
 
 #[cfg(context = "nrf52")]
 pub struct Peripherals {
@@ -197,11 +171,12 @@ impl Peripherals {
 ///
 /// # Panics
 /// Panics if initialization fails on one of the components, such as MPSL or SDC.
-#[expect(
-    clippy::needless_pass_by_value,
-    reason = "keeping consistency with other initialization functions"
-)]
-pub fn driver(p: Peripherals, spawner: Spawner, config: ariel_os_embassy_common::ble::Config) {
+pub fn build_controller(
+    peripherals: &mut crate::OptionalPeripherals,
+    spawner: Spawner,
+) -> BleController {
+    let p = Peripherals::new(peripherals);
+
     debug!("Initializing nRF BLE driver");
     #[cfg(context = "nrf52")]
     let mpsl_p =
@@ -239,16 +214,7 @@ pub fn driver(p: Peripherals, spawner: Spawner, config: ariel_os_embassy_common:
 
     let sdc_mem = SDC_MEM.init(sdc::Mem::new());
 
-    let sdc = build_sdc(sdc_p, rng, mpsl, sdc_mem).expect("Failed to build SDC");
-
-    let resources = ariel_os_embassy_common::ble::get_ble_host_resources();
-
-    let stack = trouble_host::new(sdc, resources).set_random_address(config.address);
-    let stackref = STACK.init(SameExecutorCell::new(stack, spawner));
-    // Error case is unreachable: just init'ed another once item.
-    let _ = STACKREF.init(Some(stackref).into());
-
-    debug!("nRF BLE driver initialized");
+    build_sdc(sdc_p, rng, mpsl, sdc_mem).expect("Failed to build SDC")
 }
 
 #[embassy_executor::task]

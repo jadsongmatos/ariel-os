@@ -24,8 +24,8 @@ esp-hal = { workspace = true, default-features = false }
 esp-metadata-generated = { workspace = true }
 
 [target.'cfg(context = "ariel-os")'.dev-dependencies]
-ariel-os = { path = "../../src/ariel-os", features = ["alloc"] }
-ariel-os-boards = { path = "../../src/ariel-os-boards" }
+ariel-os = { workspace = true, features = ["alloc"] }
+ariel-os-boards = { workspace = true }
 
 embedded-test = { workspace = true }
 

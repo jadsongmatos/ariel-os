@@ -14,8 +14,8 @@ ariel-os-embassy-common = { workspace = true }
 ariel-os-hal = { workspace = true }
 
 [target.'cfg(context = "ariel-os")'.dev-dependencies]
-ariel-os = { path = "../../src/ariel-os" }
-ariel-os-boards = { path = "../../src/ariel-os-boards" }
+ariel-os = { workspace = true }
+ariel-os-boards = { workspace = true }
 
 embedded-test = { workspace = true }
 

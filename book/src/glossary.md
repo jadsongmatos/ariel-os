@@ -59,6 +59,9 @@
   <dt id="esp-hal"><a href="https://docs.espressif.com/projects/rust/esp-hal/latest/">esp-hal</a>:</dt>
   <dd>A HAL for ESP32 microcontrollers, developed by their manufacturer Espressif.</dd>
 
+  <dt id="flash-memory"><a href="https://en.wikipedia.org/wiki/Flash_memory">Flash memory</a>:</dt>
+  <dd>A technology of <a href="#non-volatile-memory">non-volatile memory</a>.</dd>
+
   <dt id="hal">HAL (Hardware Abstraction Layer):</dt>
   <dd>A software layer that makes specific pieces of hardware (e.g., microcontroller peripherals) easier to use, by hiding some of their details.</dd>
 
@@ -66,6 +69,12 @@
   <dd>
     A microcontroller.
     Contains a processor, memory, and peripherals to interact with the outside world.
+  </dd>
+
+  <dt id="non-volatile-memory">Non-volatile memory (NVM):</dt>
+  <dd>
+    Memory whose contents are retained even without power.
+    Non-volatile memories include <a href="#flash-memory">flash memory</a> and <a href="#reram">ReRAM</a>.
   </dd>
 
   <dt id="nrf">nRF:</dt>
@@ -78,8 +87,22 @@
     them as well as RP microcontrollers. Sometimes abbreviated to “RPi.“
   </dd>
 
+  <dt id="reram"><a href="https://en.wikipedia.org/wiki/Resistive_random-access_memory">ReRAM (Resistive RAM)</a>:</dt>
+  <dd>
+    A technology of <a href="#non-volatile-memory">non-volatile memory</a>, much newer than <a href="#flash-memory">flash</a>.
+    Also known under the trademark RRAM.
+  </dd>
+
   <dt id="risc-v"><a href="https://en.wikipedia.org/wiki/RISC-V">RISC-V</a>:</dt>
   <dd>An open, royalty-free instruction set architecture.</dd>
+
+  <!-- NOTE: For instance the RP2040 contains floating point utility functions. -->
+  <dt id="rom">ROM (Read-Only Memory):</dt>
+  <dd>
+    <a href="#non-volatile-memory">Non-volatile memory</a> that can never be written to by software.
+    Sometimes used by manufacturers to store bootloaders or utility functions.
+    Sometimes also refers to program memory for historical reasons.
+  </dd>
 
   <dt id="rp">RP:</dt>
   <dd>A family of 32-bit microcontrollers designed by Raspberry Pi, which includes the RP2040 and RP2350 microcontrollers.</dd>

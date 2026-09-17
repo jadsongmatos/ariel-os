@@ -32,7 +32,7 @@ jobs:
       # Need to get two commits so we can get the PR's commit, not just the
       # merge commit.
       - name: Check out repository code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 2
           persist-credentials: false
@@ -165,7 +165,7 @@ jobs:
             &
 
       - name: Check out repository code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
           # we need to access all the commits to know when the file was last modified
@@ -210,7 +210,7 @@ jobs:
       # Allows us to clean up even if build fails
       - name: Cache with post-job cleanup
         if: steps.should-skip.outputs.result != 'true' && runner.environment == 'self-hosted'
-        uses: gacts/run-and-post-run@598d7a875d5620e0457490555b5e18e46082aa47 # v1
+        uses: gacts/run-and-post-run@fc6503862aba998e2f2123225ad63c09a92ed46e # v1
         with:
           run: |
             export  RUST_LOG=trace
@@ -273,7 +273,7 @@ jobs:
 
       - name: Install nightly toolchain
         if: steps.should-skip.outputs.result != 'true' && runner.environment != 'self-hosted'
-        uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # master
+        uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
         with:
           toolchain: ${{ steps.get_toolchain.outputs.toolchain }}
           targets: riscv32imc-unknown-none-elf,riscv32imac-unknown-none-elf,thumbv6m-none-eabi,thumbv7m-none-eabi,thumbv7em-none-eabi,thumbv7em-none-eabihf,thumbv8m.main-none-eabi,thumbv8m.main-none-eabihf
@@ -285,7 +285,7 @@ jobs:
       - name: Install stable toolchain
         if: steps.should-skip.outputs.result != 'true' && runner.environment != 'self-hosted'
         # configure MSRV here:
-        uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # master
+        uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
         with:
           toolchain: 1.95
           targets: riscv32imc-unknown-none-elf,riscv32imac-unknown-none-elf,thumbv6m-none-eabi,thumbv7m-none-eabi,thumbv7em-none-eabi,thumbv7em-none-eabihf,thumbv8m.main-none-eabi,thumbv8m.main-none-eabihf
@@ -305,13 +305,13 @@ jobs:
           export: false
 
       - name: rust cache
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         if: steps.should-skip.outputs.result != 'true' && runner.environment != 'self-hosted'
         with:
           key: "${{ matrix.partition }}"
 
       - name: Install laze
-        uses: taiki-e/install-action@74e87cbfa15a59692b158178d8905a61bf6fca95 # v2
+        uses: taiki-e/install-action@fa23953489c080190314742a9b907f8e97c6767c # v2
         if: steps.should-skip.outputs.result != 'true' && runner.environment != 'self-hosted'
         with:
           tool: laze@0.1

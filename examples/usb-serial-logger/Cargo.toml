@@ -1,0 +1,15 @@
+[package]
+name = "example-usb-serial-logger"
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+ariel-os = { path = "../../src/ariel-os", features = ["time"] }
+ariel-os-boards = { path = "../../src/ariel-os-boards" }
+embassy-futures = { workspace = true }
+embassy-sync = { workspace = true }
+embedded-io-async = { version = "0.7" }
+
+[lints]
+workspace = true

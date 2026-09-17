@@ -27,7 +27,6 @@ embedded-hal = { workspace = true }
 embedded-hal-async = { workspace = true }
 embedded-io = { workspace = true }
 embedded-io-async = { workspace = true }
-embedded-storage = { workspace = true }
 embedded-storage-async = { workspace = true }
 
 critical-section = { workspace = true }

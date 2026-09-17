@@ -16,7 +16,7 @@
   Example: Fixes #1234. Closes #1234.
 - Dependencies on other PRs: when other issues/PRs must be closed before this PR can be merged,
   make this PR depend on them (one line per issue/PR). This is enforced by CI.
-  Example: Depends on #9876.
+  Syntax: Depends on <ref-to-issue-or-pr>.
 -->
 
 ## Open Questions

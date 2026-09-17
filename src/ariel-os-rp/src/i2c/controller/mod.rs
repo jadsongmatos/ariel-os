@@ -21,12 +21,18 @@ const KHZ_TO_HZ: u32 = 1000;
 pub struct Config {
     /// The frequency at which the bus should operate.
     pub frequency: Frequency,
+    /// Whether to enable the internal pull-up resistor on the SDA pin.
+    pub sda_pullup: bool,
+    /// Whether to enable the internal pull-up resistor on the SCL pin.
+    pub scl_pullup: bool,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
             frequency: Frequency::UpTo100k(Kilohertz::kHz(100)),
+            sda_pullup: false,
+            scl_pullup: false,
         }
     }
 }
@@ -142,6 +148,8 @@ macro_rules! define_i2c_drivers {
 
                     let mut i2c_config = embassy_rp::i2c::Config::default();
                     i2c_config.frequency = config.frequency.khz() * KHZ_TO_HZ;
+                    i2c_config.sda_pullup = config.sda_pullup;
+                    i2c_config.scl_pullup = config.scl_pullup;
 
                     bind_interrupts!(
                         struct Irqs {

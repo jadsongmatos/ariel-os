@@ -1,5 +1,5 @@
 [package]
-name = "bench_sched_flags"
+name = "bench-sched-flags"
 edition.workspace = true
 license.workspace = true
 publish = false

@@ -64,6 +64,9 @@ pub fn main() {
         "cargo::rustc-check-cfg=cfg(context, values(\"seeedstudio-lora-e5-mini\"))"
     );
     println!(
+        "cargo::rustc-check-cfg=cfg(context, values(\"seeedstudio-xiao-esp32-s3\"))"
+    );
+    println!(
         "cargo::rustc-check-cfg=cfg(context, values(\"seeedstudio-xiao-esp32c6\"))"
     );
     println!(
@@ -86,6 +89,7 @@ pub fn main() {
     println!("cargo::rustc-check-cfg=cfg(context, values(\"stm32u083c-dk\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"ulanzi-tc001\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"unihiker-k10\"))");
+    println!("cargo::rustc-check-cfg=cfg(context, values(\"waveshare-esp32-s3-eth\"))");
     println!(
         "cargo::rustc-check-cfg=cfg(context, values(\"waveshare-esp32-s3-matrix\"))"
     );

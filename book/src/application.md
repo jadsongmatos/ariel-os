@@ -49,8 +49,6 @@ Functions can currently be registered as either `spawner`s or `task`s:
   They are provided with a [`Spawner`](https://docs.embassy.dev/embassy-executor/git/cortex-m/struct.Spawner.html) instance and can therefore be used to [`spawn`](https://docs.embassy.dev/embassy-executor/git/cortex-m/struct.Spawner.html#method.spawn) other `async` tasks.
 - [`task` functions][task-attr-docs] are `async` functions that are statically allocated at compile-time.
   They are especially useful for long-running, `async` tasks.
-  They must also be used to use *Ariel OS configuration hooks*, which can be requested with their associated macro parameter, and allow to provide configuration during boot.
-  Please refer to the documentation of [`task`][task-attr-docs] for a list of available hooks and to [Configuration Hooks](#configuration-hooks) to know more about hook usage.
 
 Both of these can be provided with an instance of an Ariel OS peripheral struct when needed, using the `peripherals` macro parameters (see the macros' documentation) and taking that Ariel OS peripheral struct as parameter.
 
@@ -73,9 +71,19 @@ async fn blinky(peripherals: pins::LedPeripherals) {
 }
 ```
 
-## Configuration Hooks
+## Using the Third-Party HALs Directly
 
-TODO
+<!-- NOTE: This implies that underlying HALs are not implementation details of Ariel OS. -->
+Ariel OS internally uses third-party HALs in [its HAL crates][ariel-os-hals], which currently all are [Embassy-style HALs][embassy-style-hals].
+[Ariel OS HAL crates][ariel-os-hals] provide portable drivers and APIs to abstract over the most common types of APIs and peripherals, so that applications can generally run just the same on boards featuring microcontrollers from different manufacturers.
+When Ariel OS does not (yet) provide a portable driver over a peripheral that *is* supported by the third-party HAL, it is still possible to directly use that driver.
+This can be done by simply adding the third-party HAL as a dependency of the application and passing the required peripheral ZSTs obtained through [Ariel OS mechanisms](#obtaining-peripheral-access) to instantiate the third-party driver in the application.
+
+> [!IMPORTANT]
+> When adding the third-party HAL as a dependency, the same version as that of Ariel OS *must* be used.
+
+This is made possible by the fact that Ariel OS takes peripherals and binds interrupts needed for a piece of functionality only when that functionality is enabled (through Cargo features or [laze modules][laze-modules-book]), unless it is a core functionality of the OS.
+For instance, leaving the `i2c` Cargo feature disabled allows drivers other than Ariel OS's to bind the interrupts required for the I2C peripherals, allowing to use I2C drivers from third-party HALs.
 
 [embassy-style-hals]: ./glossary.md#embassy-style-hals
 [ariel-os-hals]: ./glossary.md#ariel-os-hals
@@ -85,3 +93,4 @@ TODO
 [blinky-example-src]: https://github.com/ariel-os/ariel-os/tree/main/examples/blinky
 [define_peripherals-docs]: https://ariel-os.github.io/ariel-os/dev/docs/api/ariel_os/hal/macro.define_peripherals.html
 [group_peripherals-docs]: https://ariel-os.github.io/ariel-os/dev/docs/api/ariel_os/hal/macro.group_peripherals.html
+[laze-modules-book]: ./build-system.md#laze-modules

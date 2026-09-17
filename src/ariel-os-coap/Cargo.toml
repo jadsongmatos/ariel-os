@@ -9,7 +9,7 @@ license.workspace = true
 [dependencies]
 ariel-os-embassy = { workspace = true }
 ariel-os-log = { workspace = true }
-ariel-os-macros = { path = "../ariel-os-macros" }
+ariel-os-macros = { workspace = true }
 ariel-os-random = { workspace = true, features = ["csprng"], optional = true }
 ariel-os-storage = { workspace = true, optional = true }
 coap-handler = "0.2.0"
@@ -47,7 +47,7 @@ embedded-io-async = { workspace = true }
 [build-dependencies]
 # "blessed" by Cargo basing its build script API on it <https://blog.rust-lang.org/inside-rust/2024/12/13/this-development-cycle-in-cargo-1.84.html#build-script-api>
 build-rs = "0.3.0"
-cbor-edn = { version = "0.0.9", default-features = false }
+cbor-edn = { version = "0.0.11", default-features = false }
 coap-numbers = "0.2"
 minicbor = { version = "2", features = ["std"] }
 serde = "1"

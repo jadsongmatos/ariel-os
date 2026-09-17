@@ -34,8 +34,8 @@ members = [
   "src/sensors/ariel-os-sensor-lps22df",
   "src/sensors/ariel-os-sensor-nrf91-gnss",
   "src/sensors/ariel-os-sensor-stts22h",
-  "tests/benchmarks/bench_sched_flags",
-  "tests/benchmarks/bench_sched_yield",
+  "tests/benchmarks/bench-sched-flags",
+  "tests/benchmarks/bench-sched-yield",
   "tests/coap",
   "tests/coap-blinky",
   "tests/gpio",
@@ -85,6 +85,7 @@ embassy-futures = { version = "0.1.2", default-features = false }
 embassy-hal-internal = { version = "0.3.0", default-features = false }
 embassy-net = { version = "0.9.1", default-features = false }
 embassy-net-driver-channel = { version = "0.3.2", default-features = false }
+embassy-net-wiznet = { version = "0.3.0", default-features = false }
 embassy-nrf = { version = "0.8.0", default-features = false }
 embassy-rp = { version = "0.8", default-features = false }
 embassy-stm32 = { version = "0.4", default-features = false }
@@ -101,7 +102,6 @@ embedded-hal-async = { version = "1.0.0", default-features = false }
 embedded-io = { version = "0.6.1", default-features = false }
 embedded-io-async = { version = "0.6.1", default-features = false }
 embedded-nal-coap = "=0.1.0-alpha.5"
-embedded-storage = { version = "0.3.1" }
 embedded-storage-async = { version = "0.4.1" }
 embedded-test = { version = "0.7.1", default-features = false, features = [
   "ariel-os-09",
@@ -119,9 +119,7 @@ avr-device = { version = "0.8.1", default-features = false, features = ["rt"] }
 esp-radio-rtos-driver = { version = "0.2.0", default-features = false }
 esp-rom-sys = { version = "0.1.2", default-features = false }
 esp-sync = { version = "0.1.0", default-features = false }
-esp-wifi-sys = { version = "0.8.1", default-features = false }
 
-esp-storage = { version = "0.8.0" }
 xtensa-lx-rt = { version = "0.21.0", default-features = false }
 
 linkme = { version = "0.3.32" }
@@ -141,6 +139,7 @@ ariel-os-hal = { path = "src/ariel-os-hal", default-features = false }
 ariel-os-identity = { path = "src/ariel-os-identity" }
 ariel-os-log = { path = "src/ariel-os-log", default-features = false }
 ariel-os-macros = { path = "src/ariel-os-macros" }
+ariel-os-native = { path = "src/ariel-os-native" }
 ariel-os-nrf = { path = "src/ariel-os-nrf" }
 ariel-os-power = { path = "src/ariel-os-power" }
 ariel-os-random = { path = "src/ariel-os-random" }
@@ -152,6 +151,7 @@ ariel-os-sensors-gnss-time-ext = { path = "src/ariel-os-sensors-gnss-time-ext" }
 ariel-os-sensors-registry = { path = "src/ariel-os-sensors-registry" }
 ariel-os-sensors-utils = { path = "src/ariel-os-sensors-utils" }
 ariel-os-stm32 = { path = "src/ariel-os-stm32" }
+ariel-os-stm32-mapping = { path = "src/ariel-os-stm32-mapping" }
 ariel-os-storage = { path = "src/ariel-os-storage" }
 ariel-os-threads = { path = "src/ariel-os-threads" }
 ariel-os-utils = { path = "src/ariel-os-utils", default-features = false }
@@ -171,6 +171,7 @@ defmt-rtt = { version = "1.1.0" }
 document-features = "0.2.8"
 fugit = { version = "0.3.7", default-features = false }
 heapless = { version = "0.9.1", default-features = false }
+jiff = { version = "0.2", default-features = false }
 ld-memory = { version = "0.2.9" }
 log = { version = "0.4.20", default-features = false }
 once_cell = { version = "1.21.3", default-features = false, features = [
@@ -194,7 +195,6 @@ nrf-sdc = { git = "https://github.com/alexmoon/nrf-sdc", rev = "e64ad081a6948b34
 
 futures-util = { version = "0.3.32", default-features = false }
 nrf-modem = { version = "0.10.2" }
-time = { version = "0.3.47", default-features = false }
 tinyrlibc = "0.5.0"
 
 [workspace.lints.rust]

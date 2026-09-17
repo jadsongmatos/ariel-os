@@ -3,30 +3,18 @@ use bt_hci::{
     controller::{ControllerCmdAsync, ControllerCmdSync},
 };
 use embassy_executor::Spawner;
-use trouble_host::{Stack, prelude::DefaultPacketPool};
 
-pub struct Peripherals {}
+// Export the BLE controller type for this device.
+pub type BleController = DummyController;
 
-impl Peripherals {
-    pub fn new(_peripherals: &mut crate::hal::OptionalPeripherals) -> Self {
-        unimplemented!();
-    }
-}
-
-/// Returns the system BLE stack, [`trouble_host::Stack`].
-///
-/// # Panics
-///
-/// For this function to succeed, it can only be called from the system executor, and only once:
-///
-/// - Panics if the stack was already taken.
-/// - Panics when not called from the system executor.
-#[doc(alias = "bluetooth_stack")]
-pub async fn ble_stack() -> &'static Stack<'static, DummyController, DefaultPacketPool> {
-    async { unimplemented!() }.await
-}
-
-pub fn driver(_p: Peripherals, _spawner: Spawner, _config: ariel_os_embassy_common::ble::Config) {
+// This is the function called by default by `ariel-os-embassy` to initialize the BLE driver,
+// if BLE initialization is tied to WiFi initialization, make a special case in `ariel-os-embassy`.
+/// Build a BLE controller for this device.
+#[must_use]
+pub fn build_controller(
+    _p: &mut crate::hal::OptionalPeripherals,
+    _spawner: Spawner,
+) -> BleController {
     unimplemented!();
 }
 

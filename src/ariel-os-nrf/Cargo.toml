@@ -30,7 +30,6 @@ paste = { workspace = true }
 portable-atomic = { workspace = true }
 static_cell = { workspace = true }
 tinyrlibc = { workspace = true, optional = true }
-trouble-host = { workspace = true, optional = true }
 
 embassy-futures = { workspace = true, optional = true }
 embassy-net = { workspace = true, optional = true }
@@ -99,7 +98,6 @@ usb = []
 ## Enables BLE support.
 ble = [
   "dep:nrf-sdc",
-  "dep:trouble-host",
   "ariel-os-embassy-common/ble",
   "ariel-os-random/csprng",
   "hwrng",

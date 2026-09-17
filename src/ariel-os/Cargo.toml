@@ -18,25 +18,25 @@ pre-release-replacements = [
 ]
 
 [dependencies]
+ariel-os-avr = { workspace = true, optional = true }
 ariel-os-bench = { workspace = true, optional = true }
-ariel-os-boards = { path = "../ariel-os-boards" }
+ariel-os-boards = { workspace = true }
 ariel-os-buildinfo = { workspace = true }
-ariel-os-coap = { path = "../ariel-os-coap", optional = true }
+ariel-os-coap = { workspace = true, optional = true }
 ariel-os-debug = { workspace = true }
-ariel-os-embassy = { path = "../ariel-os-embassy" }
-ariel-os-avr = { path = "../ariel-os-avr", optional = true }
+ariel-os-embassy = { workspace = true }
 ariel-os-hal = { workspace = true }
 ariel-os-identity = { workspace = true }
 ariel-os-log = { workspace = true }
-ariel-os-macros = { path = "../ariel-os-macros" }
-ariel-os-nrf = { path = "../ariel-os-nrf", optional = true }
-ariel-os-power = { path = "../ariel-os-power" }
+ariel-os-macros = { workspace = true }
+ariel-os-nrf = { workspace = true, optional = true }
+ariel-os-power = { workspace = true }
 ariel-os-random = { workspace = true, optional = true }
-ariel-os-rt = { path = "../ariel-os-rt" }
+ariel-os-rt = { workspace = true }
 ariel-os-sensors = { workspace = true, optional = true }
 ariel-os-sensors-registry = { workspace = true, optional = true }
 ariel-os-storage = { workspace = true, optional = true }
-ariel-os-threads = { path = "../ariel-os-threads", optional = true }
+ariel-os-threads = { workspace = true, optional = true }
 ariel-os-utils = { workspace = true }
 document-features = { workspace = true }
 linkme = { workspace = true }
@@ -162,6 +162,16 @@ wifi-cyw43 = ["ariel-os-embassy/wifi-cyw43"]
 wifi-esp = ["ariel-os-embassy/wifi-esp"]
 # Selects STM32 Ethernet
 ethernet-stm32 = ["ariel-os-embassy/ethernet-stm32"]
+# Selects Ethernet via a WIZnet SPI chip.
+ethernet-wiznet = ["ariel-os-embassy/ethernet-wiznet"]
+# Selects the W5500 as the WIZnet chip in use.
+wiznet-w5500 = ["ariel-os-embassy/wiznet-w5500"]
+# Selects the W5100S as the WIZnet chip in use.
+wiznet-w5100s = ["ariel-os-embassy/wiznet-w5100s"]
+# Selects the W6100 as the WIZnet chip in use.
+wiznet-w6100 = ["ariel-os-embassy/wiznet-w6100"]
+# Selects the W6300 as the WIZnet chip in use.
+wiznet-w6300 = ["ariel-os-embassy/wiznet-w6300"]
 # Selects the network backend that goes through tun/tap (native only).
 tuntap = ["ariel-os-embassy/tuntap"]
 # Selects LTE-M on nRF SiPs (currently only available on nRF91 SiPs).
@@ -202,7 +212,10 @@ timer-generic-queue-128 = ["ariel-os-embassy/timer-generic-queue-128"]
 
 #! ## Development and debugging
 # Enables the debug channel.
-debug-channel = ["ariel-os-rt/debug-channel"]
+logging-over-debug-channel = [
+  "ariel-os-log/logging-over-debug-channel",
+  "ariel-os-rt/debug-channel",
+]
 # Enables logging support through `defmt`, see [`log`].
 defmt = [
   "ariel-os-bench?/defmt",
@@ -229,6 +242,8 @@ rtt-target = ["ariel-os-debug/rtt-target"]
 defmt-rtt = ["ariel-os-log/defmt-rtt"]
 esp-println = ["ariel-os-log/esp-println"]
 semihosting = ["ariel-os-debug/semihosting"]
+# Log transport defined by the application.
+custom-logging-transport = ["ariel-os-log/custom-transport-driver"]
 
 net = ["ariel-os-embassy/net"]
 

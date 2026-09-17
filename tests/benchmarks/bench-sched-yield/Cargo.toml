@@ -1,5 +1,5 @@
 [package]
-name = "bench_sched_yield"
+name = "bench-sched-yield"
 edition.workspace = true
 license.workspace = true
 publish = false

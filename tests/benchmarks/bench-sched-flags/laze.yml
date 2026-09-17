@@ -1,5 +1,5 @@
 apps:
-  - name: bench_sched_yield
+  - name: bench-sched-flags
     selects:
       - sw/threading
       - sw/benchmark

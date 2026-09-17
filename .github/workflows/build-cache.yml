@@ -50,7 +50,7 @@ jobs:
         run: pkill -f -SIGUSR1 /usr/local/bin/git-cache-daemon | true
 
       - name: Check out repository code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
           # we need to access all the commits to know when the file was last modified
@@ -98,7 +98,7 @@ jobs:
 
       - name: Cache with post-job cleanup
         if: steps.should-skip.outputs.result != 'true'
-        uses: gacts/run-and-post-run@598d7a875d5620e0457490555b5e18e46082aa47 # v1
+        uses: gacts/run-and-post-run@fc6503862aba998e2f2123225ad63c09a92ed46e # v1
         with:
           run: |
             cache-thing pull -f /home/runner/metadata -f build -f /home/runner/.cargo/git -f /home/runner/.cargo/registry --prefix global --fallback-key ${FALLBACK_KEY} || true

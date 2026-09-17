@@ -13,7 +13,7 @@ defmt = { workspace = true, optional = true }
 # lib, as documented in the hax documentation:
 # https://hacspec.org/book/quick_start/intro.html#setup-the-crate-you-want-to-verify
 [target.'cfg(hax)'.dependencies]
-hax-lib = "0.3.6"
+hax-lib = "0.4.0"
 
 [features]
 defmt = ["dep:defmt"]

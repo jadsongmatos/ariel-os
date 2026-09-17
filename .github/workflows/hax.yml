@@ -9,12 +9,12 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
       - name: ⤵ Install and configure hax
-        uses: hacspec/hax-actions@main
+        uses: hacspec/hax-actions@1f01b89579f425ad7c1e66aebbd5df7e688cb576 # main
         with:
           # pin hax to known-working
           hax_reference: cc29a3f8c0eee80a1682be78cb3b0447a0257d5b

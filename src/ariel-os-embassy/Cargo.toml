@@ -24,6 +24,7 @@ embassy-net = { workspace = true, optional = true, features = [
   "auto-icmp-echo-reply",
   "medium-ethernet",
 ] }
+embassy-net-wiznet = { workspace = true, optional = true }
 embassy-sync = { workspace = true }
 embassy-time = { workspace = true, optional = true }
 embassy-time-queue-utils = { workspace = true, optional = true }
@@ -36,14 +37,14 @@ ariel-os-boards = { workspace = true }
 ariel-os-buildinfo = { workspace = true }
 ariel-os-debug = { workspace = true }
 ariel-os-embassy-common = { workspace = true }
-ariel-os-hal = { path = "../ariel-os-hal" }
-ariel-os-identity = { path = "../ariel-os-identity" }
+ariel-os-hal = { workspace = true }
+ariel-os-identity = { workspace = true }
 ariel-os-log = { workspace = true }
-ariel-os-macros = { path = "../ariel-os-macros" }
-ariel-os-random = { path = "../ariel-os-random", optional = true }
-ariel-os-rt = { path = "../ariel-os-rt" }
+ariel-os-macros = { workspace = true }
+ariel-os-random = { workspace = true, optional = true }
+ariel-os-rt = { workspace = true }
 ariel-os-storage = { workspace = true, optional = true }
-ariel-os-threads = { path = "../ariel-os-threads", optional = true }
+ariel-os-threads = { workspace = true, optional = true }
 ariel-os-utils = { workspace = true }
 
 const-str = { workspace = true, optional = true }
@@ -154,6 +155,23 @@ wifi-esp = ["ariel-os-hal/wifi-esp", "net", "wifi"]
 
 ethernet = []
 ethernet-stm32 = ["ariel-os-hal/ethernet-stm32", "ethernet", "net"]
+## Enables support for WIZnet SPI Ethernet chips. This backend is HAL-agnostic (it only needs
+## generic SPI/GPIO support), so it lives here rather than in a per-chip HAL crate.
+ethernet-wiznet = [
+  "dep:embassy-net-wiznet",
+  "ethernet",
+  "external-interrupts",
+  "net",
+  "spi",
+]
+## Selects the W5500 as the WIZnet chip in use.
+wiznet-w5500 = ["ethernet-wiznet"]
+## Selects the W5100S as the WIZnet chip in use.
+wiznet-w5100s = ["ethernet-wiznet"]
+## Selects the W6100 as the WIZnet chip in use.
+wiznet-w6100 = ["ethernet-wiznet"]
+## Selects the W6300 as the WIZnet chip in use.
+wiznet-w6300 = ["ethernet-wiznet"]
 
 ltem-nrf-modem = [
   "ariel-os-hal/ltem-nrf-modem",
@@ -225,6 +243,7 @@ defmt = [
   "ariel-os-embassy-common/defmt",
   "ariel-os-hal/defmt",
   "embassy-executor/defmt",
+  "embassy-net-wiznet?/defmt",
   "embassy-net?/defmt",
   "embassy-time?/defmt",
   "embassy-usb?/defmt",

@@ -21,6 +21,13 @@
 #[featurecomb::comb]
 mod _featurecomb {}
 
+#[doc(hidden)]
+#[cfg(feature = "internal-transport-driver")]
+pub mod transport;
+
+#[cfg(feature = "custom-transport-driver")]
+pub mod transport;
+
 #[allow(unused, reason = "conditional compilation")]
 #[doc(hidden)]
 #[cfg(feature = "log")]
@@ -72,33 +79,36 @@ pub mod log {
     // adds/removes any items.
     pub use log::{debug, error, info, trace, warn};
 
-    #[cfg(all(
-        context = "ariel-os",
-        not(any(
-            feature = "esp-println",
-            feature = "logging-over-uart",
-            feature = "std"
-        ))
-    ))]
-    pub use ariel_os_debug::debug_channel_println as println;
-
-    #[cfg(feature = "esp-println")]
-    pub use esp_println::println;
-
-    #[cfg(feature = "std")]
-    pub use std::println;
-
-    #[cfg(feature = "debug-uart")]
-    pub use crate::uart_println as println;
-
     /// Prints to the logging output, with a newline.
     #[cfg(not(context = "ariel-os"))]
     #[macro_export]
     macro_rules! noop_println {
         ($($arg:tt)*) => {};
     }
-    #[cfg(not(context = "ariel-os"))]
-    pub use crate::noop_println as println;
+
+    cfg_select! {
+        feature = "logging-over-debug-channel" => {
+            pub use ariel_os_debug::debug_channel_println as println;
+        }
+        feature = "debug-uart" => {
+           pub use crate::uart_println as println;
+        }
+        feature = "esp-println" => {
+            pub use esp_println::println;
+        }
+        feature = "std" => {
+            pub use std::println;
+        }
+        any(feature = "internal-transport-driver", feature = "custom-transport-driver") => {
+            pub use crate::transport_println as println;
+        }
+        not(context = "ariel-os") => {
+            pub use crate::noop_println as println;
+        }
+        _ => {
+            compile_error!("No logging transport selected!");
+        }
+    }
 }
 
 // NOTE: this module is used both for `log` and when no logging facades are enabled.

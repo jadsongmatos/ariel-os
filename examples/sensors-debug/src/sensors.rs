@@ -11,7 +11,7 @@ pub async fn init() {
     #[cfg(any(context = "st-steval-mkboxpro", context = "stm32u083c-dk"))]
     stts22h::init().await;
 
-    #[cfg(context = "nrf91")]
+    #[cfg(feature = "nrf-modem")]
     nrf91::init().await;
 
     #[cfg(any(context = "unihiker-k10"))]
@@ -131,7 +131,7 @@ mod stts22h {
 #[cfg(any(context = "st-steval-mkboxpro", context = "stm32u083c-dk"))]
 pub use stts22h::STTS22H_I2C;
 
-#[cfg(context = "nrf91")]
+#[cfg(feature = "nrf-modem")]
 mod nrf91 {
     use ariel_os_sensor_nrf91_gnss::{Nrf91Gnss, config::Config};
 

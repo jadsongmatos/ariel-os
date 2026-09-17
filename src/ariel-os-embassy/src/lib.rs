@@ -321,11 +321,6 @@ async fn init_task(mut peripherals: hal::OptionalPeripherals) {
     #[cfg(all(feature = "usb", context = "nrf"))]
     hal::usb::init();
 
-    // Move out the peripherals required for drivers, so that tasks cannot mistakenly take them.
-
-    #[cfg(all(feature = "ble", not(any(context = "esp", context = "rp"))))]
-    let ble_peripherals = hal::ble::Peripherals::new(&mut peripherals);
-
     #[cfg(feature = "usb")]
     let usb_peripherals = hal::usb::Peripherals::new(&mut peripherals);
 
@@ -340,11 +335,6 @@ async fn init_task(mut peripherals: hal::OptionalPeripherals) {
     for task in embassy_tasks() {
         task(spawner, &mut peripherals);
     }
-
-    #[cfg(feature = "ble")]
-    let ble_config = ble::config();
-    #[cfg(all(feature = "ble", not(any(context = "esp", context = "rp"))))]
-    hal::ble::driver(ble_peripherals, spawner, ble_config);
 
     #[cfg(feature = "nrf91-modem")]
     {
@@ -418,6 +408,9 @@ async fn init_task(mut peripherals: hal::OptionalPeripherals) {
     #[cfg(feature = "ethernet-stm32")]
     let device = hal::ethernet::device(&mut peripherals);
 
+    #[cfg(feature = "ethernet-wiznet")]
+    let device = ethernet::wiznet::device(&mut peripherals, spawner).await;
+
     #[cfg(feature = "usb")]
     {
         for hook in usb::USB_BUILDER_HOOKS {
@@ -430,15 +423,23 @@ async fn init_task(mut peripherals: hal::OptionalPeripherals) {
         spawner.spawn(usb::usb_task(usb)).unwrap();
     }
 
-    #[cfg(all(feature = "ble-cyw43", not(feature = "wifi-cyw43")))]
-    let _ = hal::cyw43::device(&mut peripherals, &spawner, ble_config).await;
-    #[cfg(all(feature = "wifi-cyw43", not(feature = "ble-cyw43")))]
-    let (device, control) = hal::cyw43::device(&mut peripherals, &spawner).await;
-    #[cfg(all(feature = "ble-cyw43", feature = "wifi-cyw43"))]
-    let (device, control) = hal::cyw43::device(&mut peripherals, &spawner, ble_config).await;
+    #[cfg(all(feature = "ble", not(context = "rp")))]
+    let ble_controller = hal::ble::build_controller(&mut peripherals, spawner);
 
-    #[cfg(all(feature = "ble", context = "esp"))]
-    hal::ble::init(&mut peripherals, &ble_config, spawner).await;
+    #[cfg(any(feature = "ble-cyw43", feature = "wifi-cyw43"))]
+    let hal::cyw43::Cyw43Device {
+        #[cfg(feature = "ble-cyw43")]
+        ble_controller,
+        #[cfg(feature = "wifi-cyw43")]
+            net_device: device,
+        #[cfg(feature = "wifi-cyw43")]
+            net_control: control,
+        ..
+    } = hal::cyw43::device(&mut peripherals, &spawner).await;
+
+    #[cfg(feature = "ble")]
+    ble::init_stack(ble_controller, spawner);
+
     #[cfg(feature = "wifi-esp")]
     let device = hal::wifi::esp_wifi::init(&mut peripherals, spawner);
 

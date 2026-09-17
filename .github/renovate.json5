@@ -18,6 +18,16 @@
   // If no rules matches add ci-build:small label
   "labels": ["ci-build:small"],
   "packageRules": [
+    // Require manual action to open PR for rust crates.
+    {
+      "matchManagers": ["cargo"],
+      "dependencyDashboardApproval": true
+    },
+    // Explicitly disable PR updates to our MSRV
+    {
+      "matchPackageNames": ["rust"],
+      "enabled": false
+    },
     {
       // Disable renovate for the packages we have patches for
       "matchPackageNames": [
@@ -79,7 +89,7 @@
       "matchManagers": ["cargo"],
       "matchUpdateTypes": ["digest"],
       enabled: false
-    }
+    },
   ],
   // Add a 'renovate' label to every PR for the matrix bot
   "addLabels": ["renovate"]

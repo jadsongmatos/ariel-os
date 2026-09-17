@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
@@ -49,14 +49,14 @@ jobs:
         run: echo "toolchain=$(scripts/rust-toolchain.sh)" >> $GITHUB_OUTPUT
 
       - name: Install toolchain
-        uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # master
+        uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
         with:
           toolchain: ${{ steps.get_toolchain.outputs.toolchain }}
           components: rust-src
           targets: riscv32imac-unknown-none-elf
 
       - name: rust cache
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
 
       # Docs of HAL crates must be generated after that of the main crate,
       # otherwise this would result in broken links, as they use `--no-deps` for
@@ -70,12 +70,12 @@ jobs:
               -p coapcore \
               --features "
                   ariel-os-sensors/max-sample-min-count-12,
+                  ariel-os-log/custom-transport-driver,
                   bench,
                   ble,
                   coap,
                   core-affinity,
                   csprng,
-                  defmt,
                   dns,
                   executor-thread,
                   external-interrupts,
@@ -175,7 +175,7 @@ jobs:
           sed -i 's/"ariel_os","ariel_os_nrf"/"ariel_os","ariel_os_esp","ariel_os_nrf"/g' ./_site/dev/docs/api/crates.js
 
       - name: Install mdbook
-        uses: taiki-e/install-action@74e87cbfa15a59692b158178d8905a61bf6fca95 # v2
+        uses: taiki-e/install-action@fa23953489c080190314742a9b907f8e97c6767c # v2
         with:
           tool: mdbook@0.5
 
@@ -187,7 +187,7 @@ jobs:
 
       - name: Checkout older docs and book
         if: github.event_name != 'pull_request'
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: ariel-os/docs
           ref: main
@@ -252,4 +252,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5

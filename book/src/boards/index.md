@@ -28,6 +28,7 @@
 - [Heltec WiFi LoRa 32 V3](./heltec-wifi-lora-32-v3.md)
 - [Seeed Studio XIAO ESP32C6](./seeed-studio-xiao-esp32c6.md)
 - [Seeed Studio XIAO NRF52840 Plus](./seeed-studio-xiao-nrf52840-plus.md)
+- [Seeed Studio XIAO ESP32-S3](./seeed-studio-xiao-esp32-s3.md)
 - [Seeed Studio LoRa-E5 mini](./seeed-studio-lora-e5-mini.md)
 - [ST B-L475E-IOT01A](./st-b-l475e-iot01a.md)
 - [ST NUCLEO-C031C6](./st-nucleo-c031c6.md)
@@ -45,4 +46,5 @@
 - [STM32U083C-DK](./stm32u083c-dk.md)
 - [Ulanzi TC001](./ulanzi-tc001.md)
 - [Unihiker K10](./unihiker-k10.md)
+- [Waveshare ESP32-S3-ETH](./waveshare-esp32-s3-eth.md)
 - [Waveshare ESP32-S3-Matrix](./waveshare-esp32-s3-matrix.md)

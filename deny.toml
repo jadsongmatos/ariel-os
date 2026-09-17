@@ -57,6 +57,16 @@ deny = [
   { crate = "pico-args", reason = "CLI argument parsing crate", wrappers = [
     "lalrpop", # This exception is only needed for `pio-parser`.
   ] },
+  # We favor Jiff over other time-related crates, as the ecosystem is moving
+  # towards it, and to avoid dependency duplication.
+  # `chrono` is now soft-deprecated: <https://github.com/chronotope/chrono/issues/1768>.
+  { crate = "chrono", use-instead = "jiff", reason = "avoids duplication of time-related crates", wrappers = [
+    "cbor-edn",
+    "cbor-diag",
+  ] },
+  { crate = "time", use-instead = "jiff", reason = "avoids duplication of time-related crates", wrappers = [
+    "der", # Only needed for `embedded-tls` until removed upstream.
+  ] },
 ]
 
 # This section is considered when running `cargo deny check sources`.

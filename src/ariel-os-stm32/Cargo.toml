@@ -9,7 +9,7 @@ license.workspace = true
 [dependencies]
 ariel-os-embassy-common = { workspace = true }
 ariel-os-random = { workspace = true, optional = true }
-ariel-os-stm32-mapping = { path = "../ariel-os-stm32-mapping" }
+ariel-os-stm32-mapping = { workspace = true }
 ariel-os-utils = { workspace = true }
 defmt = { workspace = true, optional = true }
 embassy-embedded-hal = { workspace = true, optional = true }
@@ -28,6 +28,11 @@ paste = { workspace = true }
 portable-atomic = { workspace = true }
 static_cell = { workspace = true }
 
+[build-dependencies]
+stm32-metapac = { version = "18.0.0", default-features = false, features = [
+  "metadata",
+] }
+
 [target.'cfg(use_stm32_single_bank)'.dependencies]
 embassy-stm32 = { workspace = true, default-features = false, features = [
   "single-bank",
@@ -36,11 +41,6 @@ embassy-stm32 = { workspace = true, default-features = false, features = [
 [target.'cfg(use_stm32_dual_bank)'.dependencies]
 embassy-stm32 = { workspace = true, default-features = false, features = [
   "dual-bank",
-] }
-
-[build-dependencies]
-stm32-metapac = { version = "18.0.0", default-features = false, features = [
-  "metadata",
 ] }
 
 [features]

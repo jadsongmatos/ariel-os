@@ -12,25 +12,22 @@ once set up, tests can be run by issuing `laze build -b <builder> test`.
 `embedded-tests` can be used for any target that has `probe-rs` support (which currently means all targets).
 Both async and non-async code can be tested.
 
-> [!NOTE]
-> Currently, Ariel OS requires a fork of `embedded-test`. When using Ariel's
-build system, this will be used automatically.
 
-## Differences from vanilla `embedded-test`
+## Differences from vanilla `embedded-test` usage
 
 In Ariel OS, the OS itself will start and initialize components *before* the
 tests are run. Logging, networking, ... will be available as for regular
 Ariel OS applications.
 
-As a consequence, no Cargo features other than `ariel-os` should be enabled on the `embedded-test` dependency.
-In order to not require `default-features = false`, the (default)
-`panic-handler` feature is ignored when the `ariel-os` feature is enabled.
+As a consequence, no Cargo features other than `ariel-os-*` should be enabled on the `embedded-test` dependency.
+In order to not require applications to set `default-features = false`, the (default)
+`panic-handler` feature is ignored when the `ariel-os-*` feature is enabled.
 
 ## Setting up `embedded-test` for Ariel OS applications or libraries
 
 Steps for enabling tests:
 
-1. Add `embedded-test` as a dev-dependency of your crate, and enable its `ariel-os` Cargo feature, as follows:
+1. Add `embedded-test` as a dev-dependency of your crate, and enable its `ariel-os-*` Cargo feature, as follows:
 
 ```yaml
 [dev-dependencies]

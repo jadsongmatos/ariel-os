@@ -14,15 +14,9 @@ use rpi_pico_w::{CywSpi, DEFAULT_CLOCK_DIVIDER, Irqs};
 use static_cell::StaticCell;
 
 #[cfg(feature = "ble-cyw43")]
-use ariel_os_embassy_common::cell::SameExecutorCell;
-
-#[cfg(feature = "ble-cyw43")]
 use bt_hci::controller::ExternalController;
 #[cfg(feature = "wifi")]
 use cyw43::JoinOptions;
-
-#[cfg(feature = "ble-cyw43")]
-use crate::ble::{self, SLOTS};
 
 pub type NetworkDevice = cyw43::NetDriver<'static>;
 
@@ -56,14 +50,21 @@ async fn wifi_cyw43_task(runner: Runner<'static, Output<'static>, CywSpi>) -> ! 
     runner.run().await
 }
 
+/// Data structures returned by [`device()`].
+pub struct Cyw43Device<'b> {
+    pub net_device: embassy_net_driver_channel::Device<'b, 1514>,
+    pub net_control: Control<'b>,
+    #[cfg(feature = "ble-cyw43")]
+    pub ble_controller: crate::ble::BleController,
+}
+
 /// # Panics
 ///
 /// Panics if we fail to launch the cyw43 runner task.
 pub async fn device<'a, 'b: 'a>(
     peripherals: &'a mut crate::OptionalPeripherals,
     spawner: &Spawner,
-    #[cfg(feature = "ble-cyw43")] config: ariel_os_embassy_common::ble::Config,
-) -> (embassy_net_driver_channel::Device<'b, 1514>, Control<'b>) {
+) -> Cyw43Device<'b> {
     let pins = rpi_pico_w::take_pins(peripherals);
 
     let fw = cyw43_firmware::CYW43_43439A0;
@@ -93,24 +94,16 @@ pub async fn device<'a, 'b: 'a>(
     );
 
     #[cfg(not(feature = "ble-cyw43"))]
-    let (net_device, mut control, runner) =
+    let (net_device, mut net_control, runner) =
         cyw43::new(STATE.init_with(cyw43::State::new), pwr, spi, fw).await;
 
     #[cfg(feature = "ble-cyw43")]
-    let (net_device, mut control, runner) = {
+    let (net_device, mut net_control, runner, ble_controller) = {
         let (net_device, bt_device, control, runner) =
             cyw43::new_with_bluetooth(STATE.init_with(cyw43::State::new), pwr, spi, fw, btfw).await;
-        let controller: ExternalController<_, SLOTS> = ExternalController::new(bt_device);
-        let resources = ariel_os_embassy_common::ble::get_ble_host_resources();
-        let mut rng = ariel_os_random::crypto_rng();
-        let stack = trouble_host::new(controller, resources)
-            .set_random_generator_seed(&mut rng)
-            .set_random_address(config.address);
-        let stackref = ble::STACK.init(SameExecutorCell::new(stack, *spawner));
-        // Error case is unreachable: just init'ed another once item.
-        let _ = ble::STACKREF.init(Some(stackref).into());
+        let ble_controller = ExternalController::new(bt_device);
 
-        (net_device, control, runner)
+        (net_device, control, runner, ble_controller)
     };
 
     // control
@@ -120,7 +113,12 @@ pub async fn device<'a, 'b: 'a>(
     // this needs to be spawned here (before using `control`)
     spawner.spawn(wifi_cyw43_task(runner)).unwrap();
 
-    control.init(clm).await;
+    net_control.init(clm).await;
 
-    (net_device, control)
+    Cyw43Device {
+        net_device,
+        net_control,
+        #[cfg(feature = "ble-cyw43")]
+        ble_controller,
+    }
 }

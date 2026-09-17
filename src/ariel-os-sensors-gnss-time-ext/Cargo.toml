@@ -9,13 +9,11 @@ repository.workspace = true
 license.workspace = true
 
 [dependencies]
-ariel-os-sensors = { path = "../ariel-os-sensors" }
+ariel-os-sensors = { workspace = true }
 defmt = { workspace = true, optional = true }
 
 [dev-dependencies]
-ariel-os-sensors = { path = "../ariel-os-sensors", features = [
-  "max-sample-min-count-4",
-] }
+ariel-os-sensors = { workspace = true, features = ["max-sample-min-count-4"] }
 static_cell = { workspace = true }
 
 [features]

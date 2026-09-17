@@ -28,6 +28,9 @@ audit-as-crates-io = true
 [policy.cyw43]
 audit-as-crates-io = true
 
+[policy.cyw43-pio]
+audit-as-crates-io = true
+
 [policy.embassy-hal-internal]
 audit-as-crates-io = true
 
@@ -169,10 +172,6 @@ criteria = "safe-to-deploy"
 version = "1.13.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.async-lock]]
-version = "2.8.0"
-criteria = "safe-to-deploy"
-
 [[exemptions.at-commands]]
 version = "0.5.5"
 criteria = "safe-to-deploy"
@@ -250,7 +249,7 @@ version = "0.1.12"
 criteria = "safe-to-deploy"
 
 [[exemptions.cbor-edn]]
-version = "0.0.9"
+version = "0.0.11"
 criteria = "safe-to-deploy"
 
 [[exemptions.cbor-macro]]
@@ -406,7 +405,7 @@ version = "0.1.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.cyw43-pio]]
-version = "0.8.0"
+version = "0.8.0@git:603583d94cb7ba14b3a6bbb84c8c5fea8bffea0d"
 criteria = "safe-to-deploy"
 
 [[exemptions.darling]]
@@ -551,6 +550,10 @@ criteria = "safe-to-deploy"
 
 [[exemptions.embassy-net-driver-channel]]
 version = "0.4.0"
+criteria = "safe-to-deploy"
+
+[[exemptions.embassy-net-wiznet]]
+version = "0.3.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.embassy-nrf]]
@@ -805,10 +808,6 @@ criteria = "safe-to-deploy"
 version = "0.34.0"
 criteria = "safe-to-deploy"
 
-[[exemptions.event-listener]]
-version = "2.5.3"
-criteria = "safe-to-deploy"
-
 [[exemptions.featurecomb]]
 version = "0.1.3"
 criteria = "safe-to-deploy"
@@ -890,15 +889,15 @@ version = "0.3.1"
 criteria = "safe-to-deploy"
 
 [[exemptions.hax-lib]]
-version = "0.3.6"
+version = "0.4.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.hax-lib-macros]]
-version = "0.3.6"
+version = "0.4.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.hax-lib-macros-types]]
-version = "0.3.6"
+version = "0.4.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.heapless]]
@@ -1146,7 +1145,7 @@ version = "0.10.2"
 criteria = "safe-to-deploy"
 
 [[exemptions.polling]]
-version = "2.8.0"
+version = "3.0.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.poly1305]]
@@ -1337,10 +1336,6 @@ criteria = "safe-to-deploy"
 version = "0.13.1"
 criteria = "safe-to-deploy"
 
-[[exemptions.socket2]]
-version = "0.4.4"
-criteria = "safe-to-deploy"
-
 [[exemptions.somni-expr]]
 version = "0.2.0"
 criteria = "safe-to-deploy"
@@ -1451,18 +1446,6 @@ criteria = "safe-to-deploy"
 
 [[exemptions.volatile-register]]
 version = "0.2.2"
-criteria = "safe-to-deploy"
-
-[[exemptions.winapi]]
-version = "0.3.9"
-criteria = "safe-to-deploy"
-
-[[exemptions.winapi-i686-pc-windows-gnu]]
-version = "0.4.0"
-criteria = "safe-to-deploy"
-
-[[exemptions.winapi-x86_64-pc-windows-gnu]]
-version = "0.4.0"
 criteria = "safe-to-deploy"
 
 [[exemptions.xtensa-lx]]

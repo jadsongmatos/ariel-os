@@ -78,11 +78,12 @@ Ariel OS's logger for `log` supports configuring the log level globally, but do
 Logging can use various transports, but currently only one can be used at a time.
 The table below presents those supported in Ariel OS and which hardware and host tool are required:
 
-| Logging transport                        | Supported               | laze module                  | Required hardware                                                                         | Required host tool              |
-| ---------------------------------------- | :---------------------: | ---------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------- |
-| [Debug channel][debug-channel-book]      | Available on all chips  | `logging-over-debug-channel` | Debug probe attached to the debug interface                                               | Debug channel-enabled host tool |
-| [USB CDC-ACM][usb-cdc-acm-glossary-book] | On ESP32 MCUs only      | `logging-over-usb`           | USB cable attached to the user USB port                                                   | Serial monitor                  |
-| [UART][uart-glossary-book]               | On ESP32 MCUs only      | `logging-over-uart`          | USB ⟷ UART adapter attached to the supported UART pins (may already be part of the board) | Serial monitor                  |
+| Logging transport                        | Supported               | laze module                  | Required hardware                                                                         | Required host tool                   |
+| ---------------------------------------- | :---------------------: | ---------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------ |
+| [Debug channel][debug-channel-book]      | Available on all chips  | `logging-over-debug-channel` | Debug probe attached to the debug interface                                               | Debug channel-enabled host tool      |
+| [USB CDC-ACM][usb-cdc-acm-glossary-book] | On ESP32 MCUs only      | `logging-over-usb`           | USB cable attached to the user USB port                                                   | Serial monitor                       |
+| [UART][uart-glossary-book]               | On ESP32 MCUs only      | `logging-over-uart`          | USB ⟷ UART adapter attached to the supported UART pins (may already be part of the board) | Serial monitor                       |
+| [Custom](#custom-logging-transports)     | Available on all chips  | `custom-logging-transport`   | Depends on the implemented transport                                                      | Depends on the implemented transport |
 
 On ESP32 devices, Ariel OS uses [`espflash`][espflah-cratesio] by default to obtain and print logs, whose usage is determined by the `espflash` [laze module][laze-modules-book].
 When `espflash` is selected at the time of compilation, `logging-over-debug-channel` is not enabled and one of the other available logging transports is used instead.
@@ -105,6 +106,24 @@ When `espflash` is selected at the time of compilation, `logging-over-debug-chan
 >
 > - Other logging transports will later be supported, including UART and USB CDC-ACM on non-ESP32 devices.
 > - Using multiple transports at the same time may be supported in the future.
+
+### Custom Logging Transports
+
+An application can connect a custom logging transport to send the logs through.
+
+This is enabled using the `custom-logging-transport` [laze module][laze-modules-book].
+This will give access to [`register_custom_transport()`][register_custom_transport_fn], which takes two arguments:
+
+- `write_bytes`: this function should take a reference to a slice of bytes (`&[u8]`) as input and send it through the transport.
+- `flush`: this function should flush the data through the transport when available for the transport.
+
+> [!IMPORTANT]
+> The functions given to [`register_custom_transport`][register_custom_transport_fn] must not wait on interrupts they may be called
+> in the context of a critical section and should not make calls to the logging facade.
+
+> [!NOTE]
+> The logs triggered before setting the logging transport functions using [`register_custom_transport`][register_custom_transport_fn]
+> may be lost.
 
 ## Fetching and Displaying the Logging Output on the Host
 
@@ -145,3 +164,4 @@ When multiple tasks of the same name exist, which variant is used depends on whi
 [semihosting-book]: ./flashing-debugging.md#semihosting
 [laze-tasks-book]: ./build-system.md#laze-tasks
 [rtt-book]: ./flashing-debugging.md#real-time-transfer-rtt
+[register_custom_transport_fn]: https://ariel-os.github.io/ariel-os/dev/docs/api/ariel_os/log/transport/fn.register_custom_transport.html

@@ -37,6 +37,8 @@ subdirs:
   - threading-event
   - threading-multicore
   - threading-timers
+  - uart-echo
   - udp-echo
   - usb-keyboard
   - usb-serial
+  - usb-serial-logger

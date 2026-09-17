@@ -9,13 +9,27 @@ license.workspace = true
 [package.metadata.feature-groups]
 logging-facade.xor = { features = ["defmt", "log"] }
 logging-transport.xor = { features = [
-  "defmt-rtt",
+  "logging-over-debug-channel",
+  "internal-transport-driver",
+  "custom-transport-driver",
   "logging-over-uart",
   "logging-over-usb",
 ] }
 
+# Temporary, refuse to have defmt as a frontend when we use a pluggable transport.
+# Remove this when a defmt logger is implemented for pluggable transports.
+transport-defmt-conflict.xor = { features = [
+  "defmt",
+  "internal-transport-driver",
+  "custom-transport-driver",
+] }
+
+[package.metadata.feature-groups.features]
+defmt-rtt.requires = { features = ["logging-over-debug-channel"] }
+
+
 [dependencies]
-ariel-os-debug = { workspace = true }
+ariel-os-debug = { workspace = true, optional = true }
 ariel-os-utils = { workspace = true, optional = true }
 const-str = { workspace = true, optional = true }
 critical-section = { workspace = true, optional = true }
@@ -59,8 +73,15 @@ debug-uart = ["dep:embassy-sync", "logging-over-uart"]
 # `defmt-rtt` uses the debug channel as the logging transport, so it has to go
 # through this crate.
 defmt-rtt = ["ariel-os-debug/defmt-rtt"]
+# Using the debug channel as the transport
+logging-over-debug-channel = ["dep:ariel-os-debug"]
 logging-over-uart = ["esp-println?/uart"]
 logging-over-usb = ["esp-println?/jtag-serial"]
+# Connect log transports that are implemented inside Ariel OS' repo.
+internal-transport-driver = ["dep:embassy-sync"]
+# Connect log transports implemented in an application.
+custom-transport-driver = ["dep:embassy-sync"]
+
 std = []
 
 _test = []

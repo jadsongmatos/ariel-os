@@ -26,8 +26,8 @@ use embassy_sync::{
     blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel, once_lock::OnceLock,
 };
 use futures_util::StreamExt as _;
+use jiff::{civil::DateTime, tz::TimeZone};
 use nrf_modem::{Gnss, GnssData, GnssStream};
-use time::{Date, Month, Time, UtcDateTime};
 
 use ariel_os_log::{Debug2Format, debug, error, warn};
 use ariel_os_sensors::{
@@ -233,27 +233,24 @@ impl Nrf91Gnss {
     fn convert_to_time_parts(
         data: &nrf_modem::nrfxlib_sys::nrf_modem_gnss_pvt_data_frame,
     ) -> Option<(i32, i32)> {
-        let parsed_date = Date::from_calendar_date(
-            data.datetime.year.into(),
-            Month::try_from(data.datetime.month).ok()?,
-            data.datetime.day,
-        )
-        .ok()?;
-
-        let time = Time::from_hms_milli(
-            data.datetime.hour,
-            data.datetime.minute,
-            data.datetime.seconds,
-            data.datetime.ms,
-        )
-        .ok()?;
-
         // Default year when no GNSS fix.
         if data.datetime.year == 1980 {
             return None;
         }
+        let parsed_date_time = DateTime::new(
+            data.datetime.year.cast_signed(),
+            data.datetime.month.cast_signed(),
+            data.datetime.day.cast_signed(),
+            data.datetime.hour.cast_signed(),
+            data.datetime.minute.cast_signed(),
+            data.datetime.seconds.cast_signed(),
+            i32::from(data.datetime.ms) * 1_000_000,
+        )
+        .ok()?
+        .to_zoned(TimeZone::UTC)
+        .ok()?;
 
-        let timestamp = UtcDateTime::new(parsed_date, time).unix_timestamp_nanos();
+        let timestamp = parsed_date_time.timestamp().as_nanosecond();
 
         Some(ariel_os_sensors_gnss_time_ext::convert_datetime_to_parts(timestamp).unwrap())
     }
