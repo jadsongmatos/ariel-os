@@ -5,8 +5,6 @@
 //! parameter so that HAL-generic code in [`ariel_os::gpio`] can operate on
 //! AVR pins just like on cortex-m or RISC-V targets.
 
-use core::marker::PhantomData;
-
 pub mod input {
     //! Input-specific types.
 

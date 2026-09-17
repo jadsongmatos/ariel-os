@@ -5,6 +5,8 @@
 #[allow(non_snake_case)]
 pub struct OptionalPeripherals {
     pub PB5: Option<Peri<'static, crate::peripherals::PB5>>,
+    pub PD7: Option<Peri<'static, crate::peripherals::PD7>>,
+    pub PC0: Option<Peri<'static, crate::peripherals::PC0>>,
 }
 
 #[cfg(not(feature = "arduino-uno"))]
@@ -34,7 +36,11 @@ pub struct Peripherals;
 #[cfg(feature = "arduino-uno")]
 impl From<Peripherals> for OptionalPeripherals {
     fn from(_peripherals: Peripherals) -> Self {
-        Self { PB5: None }
+        Self {
+            PB5: None,
+            PD7: None,
+            PC0: None,
+        }
     }
 }
 

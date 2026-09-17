@@ -54,7 +54,11 @@ pub fn init() -> OptionalPeripherals {
     embassy_avr::time_driver::init();
     #[cfg(feature = "arduino-uno")]
     {
-        OptionalPeripherals { PB5: None }
+        OptionalPeripherals {
+            PB5: None,
+            PD7: None,
+            PC0: None,
+        }
     }
     #[cfg(not(feature = "arduino-uno"))]
     {
