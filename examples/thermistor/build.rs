@@ -8,16 +8,21 @@ const R_NOMINAL_OHMS: f64 = 100_000.0;
 const T_NOMINAL_C: f64 = 25.0;
 /// Beta coefficient of the thermistor, in kelvins.
 const BETA_K: f64 = 3950.0;
-/// Pull-up resistor between 5 V and the ADC pin, in ohms.
-const R_PULLUP_OHMS: u32 = 4_700;
+/// External pull-up resistor between 5 V and the ADC pin, in ohms, used without the
+/// `internal-pull-up` feature.
+const R_PULLUP_OHMS: u16 = 4_700;
 /// Resistance of the `ATmega328P` internal pull-up, in ohms, used with the `internal-pull-up`
 /// feature.
 ///
 /// The datasheet only guarantees 20–50 kΩ. This value was measured on one Arduino Uno against a
-/// 19.9 °C reference; calibrate it again for another board.
-const R_INTERNAL_PULLUP_OHMS: u32 = 35_687;
+/// 19.8 °C reference, with 3.86 V on the pin. Above about 3.5 V the pull-up no longer acts like a
+/// resistor, so calibrate it at working temperatures with `M305 K`.
+const R_INTERNAL_PULLUP_OHMS: u16 = 37_489;
 /// Number of 10-bit ADC readings summed per measurement (at most 64, so that the sum fits a `u16`).
-const OVERSAMPLING: u16 = 16;
+///
+/// ADC noise dithers the readings, so more readings add resolution, which the internal pull-up
+/// needs at hotend temperatures: the pin then sits below 0.1 V.
+const OVERSAMPLING: u16 = 64;
 /// Lowest temperature covered by the table, in °C.
 const TABLE_MIN_C: u16 = 0;
 /// Highest temperature covered by the table, in °C.
@@ -37,7 +42,7 @@ fn main() {
     let t_nominal_k = T_NOMINAL_C + 273.15;
 
     let mut code = String::new();
-    writeln!(code, "pub const R_PULLUP_OHMS: u32 = {r_pullup_ohms};").unwrap();
+    writeln!(code, "pub const R_PULLUP_OHMS: u16 = {r_pullup_ohms};").unwrap();
     writeln!(code, "pub const OVERSAMPLING: u16 = {OVERSAMPLING};").unwrap();
     writeln!(code, "pub const FULL_SCALE: u32 = {full_scale};").unwrap();
     code.push_str("pub const TABLE: &[(u16, u16)] = &[\n");

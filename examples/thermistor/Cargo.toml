@@ -5,9 +5,10 @@ license.workspace = true
 publish = false
 
 [dependencies]
-ariel-os = { path = "../../src/ariel-os" }
+ariel-os = { path = "../../src/ariel-os", features = ["time"] }
 ariel-os-boards = { path = "../../src/ariel-os-boards" }
-embassy-avr = { workspace = true, features = ["arduino-uno"] }
+# `rt` buffers serial input with the USART receive interrupt.
+embassy-avr = { workspace = true, features = ["arduino-uno", "rt"] }
 ufmt = "0.2.0"
 
 [features]
