@@ -377,9 +377,10 @@ contexts:
         - --cfg context=\"avr\"
         - -C target-cpu=atmega328p
         - -C panic=abort
-        # avr-libc 2.3.2 / avr-gcc 16 on this system doesn't put
-        # crt<s>.o / libm / libc on the default search path.
-        - -Clink-args=-B/usr/lib/avr/lib/avr5
+        # rustc hard-codes avr-gcc as the avr-none link driver. This local
+        # shim calls avr-ld directly, with absolute avr-libc paths (see
+        # avr-hal/tools/README.md in this workspace).
+        - -Clinker=/home/jadson/Documentos/uno/avr-hal/tools/avr-gcc-shim
         # nightly executor path (embassy-executor/nightly) generates
         # `type Fut = impl Future` in task trait impls; TAIT is unstable and
         # needs this gate on every crate in the AVR build.
