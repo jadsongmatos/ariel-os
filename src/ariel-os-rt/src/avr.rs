@@ -139,7 +139,10 @@ fn main() -> ! {
     crate::startup();
 }
 
-pub fn init() {}
+/// Paints the stack, so that [`Stack::peak_usage()`] measures it from here on.
+pub fn init() {
+    Stack::get().repaint();
+}
 
 /// Wait for interrupt — puts the AVR into sleep mode until an interrupt occurs.
 ///
@@ -149,11 +152,29 @@ pub fn wfi() {
     avr_device::asm::sleep();
 }
 
+/// Returns the address of the last byte pushed on the stack.
+///
+/// The AVR stack pointer points to the next free byte: a push stores the byte, then decrements
+/// the pointer.
 pub(crate) fn sp() -> usize {
-    0
+    /// Data-space addresses of `SPL` and `SPH`, the two halves of the stack pointer.
+    const SPL: *const u8 = 0x5d as *const u8;
+    const SPH: *const u8 = 0x5e as *const u8;
+    // SAFETY: `SPL` and `SPH` are always readable, and reading them has no side effects.
+    let (low, high) = unsafe { (SPL.read_volatile(), SPH.read_volatile()) };
+    usize::from(u16::from_le_bytes([low, high])) + 1
 }
 
 use crate::stack::Stack;
-pub(crate) fn stack() -> crate::stack::Stack {
-    Stack::default()
+/// Returns the stack, which grows down from the end of the RAM to the end of the static data.
+pub(crate) fn stack() -> Stack {
+    unsafe extern "C" {
+        /// End of `.data`, `.bss` and `.noinit`, from the AVR linker scripts.
+        static _end: u8;
+        /// Last byte of the RAM, where the stack starts.
+        static __stack: u8;
+    }
+    let lowest = &raw const _end as usize;
+    let highest = &raw const __stack as usize + 1;
+    Stack::new(lowest, highest)
 }
