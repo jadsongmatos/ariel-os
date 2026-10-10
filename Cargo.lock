@@ -6267,16 +6267,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "thermistor"
-version = "0.0.0"
-dependencies = [
- "ariel-os",
- "ariel-os-boards",
- "embassy-avr",
- "ufmt",
-]
-
-[[package]]
 name = "thermometer"
 version = "0.0.0"
 dependencies = [
