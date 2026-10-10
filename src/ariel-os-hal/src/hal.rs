@@ -64,6 +64,12 @@ cfg_select! {
         pub use dummy::{SWI, identity};
         // Pin types (PB5, etc.)
         pub use ariel_os_avr::peripherals;
+        // Real UART driver for USART0
+        #[cfg(feature = "uart")]
+        pub use ariel_os_avr::uart;
+        // EEPROM-backed storage driver
+        #[cfg(feature = "storage")]
+        pub use ariel_os_avr::storage;
         // init and OptionalPeripherals
         pub use ariel_os_avr::{init, OptionalPeripherals};
     }

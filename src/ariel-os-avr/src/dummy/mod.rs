@@ -21,8 +21,6 @@
 mod executor;
 
 #[doc(hidden)]
-
-
 #[doc(hidden)]
 pub mod peripheral;
 
@@ -37,14 +35,6 @@ pub mod i2c;
 #[cfg(feature = "spi")]
 pub mod spi;
 
-#[doc(hidden)]
-#[cfg(feature = "storage")]
-pub mod storage;
-
-#[doc(hidden)]
-#[cfg(feature = "uart")]
-pub mod uart;
-
 pub use executor::{Executor, Spawner};
 pub use peripheral::{IntoPeripheral, OptionalPeripherals};
 
@@ -58,6 +48,12 @@ pub fn init() -> OptionalPeripherals {
             PB5: None,
             PD7: None,
             PC0: None,
+            PD0: None,
+            PD1: None,
+            PD2: None,
+            PD3: None,
+            #[cfg(feature = "storage")]
+            EEPROM: None,
         }
     }
     #[cfg(not(feature = "arduino-uno"))]

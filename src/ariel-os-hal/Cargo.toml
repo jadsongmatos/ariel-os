@@ -15,6 +15,7 @@ embassy-sync = { workspace = true, optional = true }
 
 embedded-hal = { workspace = true }
 embedded-hal-async = { workspace = true }
+embedded-storage-async = { workspace = true, optional = true }
 
 [target.'cfg(context = "esp")'.dependencies]
 ariel-os-esp = { workspace = true }
@@ -135,8 +136,10 @@ hwrng = [
 ]
 
 storage = [
+  "dep:embedded-storage-async",
   #"ariel-os-esp/storage",
   "ariel-os-nrf/storage",
+  "ariel-os-avr/storage",
   "ariel-os-rp/storage",
   "ariel-os-stm32/storage",
 ]

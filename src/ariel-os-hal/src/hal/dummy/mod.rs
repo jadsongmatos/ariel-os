@@ -42,7 +42,7 @@ pub mod identity;
 pub mod spi;
 
 #[doc(hidden)]
-#[cfg(feature = "storage")]
+#[cfg(all(feature = "storage", not(context = "avr")))]
 pub mod storage;
 
 #[doc(hidden)]

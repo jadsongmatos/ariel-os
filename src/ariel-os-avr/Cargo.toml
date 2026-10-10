@@ -32,9 +32,15 @@ embedded-storage-async = { workspace = true }
 critical-section = { workspace = true }
 portable-atomic = { workspace = true, features = ["unsafe-assume-single-core"] }
 
+# The `#[avr_device::interrupt]` handlers in `gpio` resolve the crate at the root path.
+avr-device = { workspace = true, features = ["atmega328p"] }
+
 [features]
 ## Enables GPIO interrupt support.
-external-interrupts = ["ariel-os-embassy-common/external-interrupts"]
+external-interrupts = [
+  "ariel-os-embassy-common/external-interrupts",
+  "embassy-avr/rt",
+]
 
 ## Enables I2C support.
 i2c = ["ariel-os-embassy-common/i2c"]
@@ -43,7 +49,7 @@ i2c = ["ariel-os-embassy-common/i2c"]
 spi = ["ariel-os-embassy-common/spi"]
 
 ## Enables UART support.
-uart = ["ariel-os-embassy-common/uart"]
+uart = ["ariel-os-embassy-common/uart", "embassy-avr/rt"]
 
 ## Enables storage support.
 storage = []

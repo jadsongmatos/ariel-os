@@ -20,8 +20,10 @@ use crate::hal::{
     },
 };
 
-#[cfg(feature = "external-interrupts")]
-use crate::hal::gpio::input::IntEnabledInput as HalIntEnabledInput;
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+type HalIntEnabledInput<'a, P> = crate::hal::gpio::input::IntEnabledInput<'a, P>;
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+type HalIntEnabledInput<'a, P> = crate::hal::gpio::input::IntEnabledInput<'a>;
 
 use input::InputBuilder;
 use output::OutputBuilder;
@@ -96,16 +98,39 @@ impl<'a> embedded_hal::digital::ErrorType for Input<'a> {
     type Error = <HalInput<'a> as embedded_hal::digital::ErrorType>::Error;
 }
 
+/// Pin types that [`InputBuilder::build_with_interrupt()`] accepts.
+///
+/// Only AVR restricts them: there the pin type selects the pin-change interrupt bit at compile
+/// time. The other families accept any pin type.
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+pub trait IntEnabledPin: crate::hal::gpio::input::PinChangeId {}
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+impl<P: crate::hal::gpio::input::PinChangeId> IntEnabledPin for P {}
+
+/// Pin types that [`InputBuilder::build_with_interrupt()`] accepts.
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+pub trait IntEnabledPin {}
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+impl<P> IntEnabledPin for P {}
+
 /// A GPIO input that supports external interrupts.
 ///
 /// Can be obtained with [`InputBuilder::build_with_interrupt()`].
-#[cfg(feature = "external-interrupts")]
-pub struct IntEnabledInput<'a> {
-    input: HalIntEnabledInput<'a>,
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+pub struct IntEnabledInput<'a, P: IntEnabledPin> {
+    input: HalIntEnabledInput<'a, P>,
 }
 
-#[cfg(feature = "external-interrupts")]
-impl IntEnabledInput<'_> {
+/// A GPIO input that supports external interrupts.
+///
+/// Can be obtained with [`InputBuilder::build_with_interrupt()`].
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+pub struct IntEnabledInput<'a, P: IntEnabledPin = ()> {
+    input: HalIntEnabledInput<'a, P>,
+}
+
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+impl<'a, P: IntEnabledPin> IntEnabledInput<'a, P> {
     inner_impl_input_methods!(input);
 
     /// Asynchronously waits until the input level is high.
@@ -136,42 +161,120 @@ impl IntEnabledInput<'_> {
     }
 }
 
-#[cfg(feature = "external-interrupts")]
-#[doc(hidden)]
-impl<'a> embedded_hal::digital::ErrorType for IntEnabledInput<'a> {
-    type Error = <HalIntEnabledInput<'a> as embedded_hal::digital::ErrorType>::Error;
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+impl<'a, P: IntEnabledPin> IntEnabledInput<'a, P> {
+    inner_impl_input_methods!(input);
+
+    /// Asynchronously waits until the input level is high.
+    /// Returns immediately if it is already high.
+    pub async fn wait_for_high(&mut self) {
+        self.input.wait_for_high().await;
+    }
+
+    /// Asynchronously waits until the input level is low.
+    /// Returns immediately if it is already low.
+    pub async fn wait_for_low(&mut self) {
+        self.input.wait_for_low().await;
+    }
+
+    /// Asynchronously waits for the input level to transition from low to high.
+    pub async fn wait_for_rising_edge(&mut self) {
+        self.input.wait_for_rising_edge().await;
+    }
+
+    /// Asynchronously waits for the input level to transition from high to low.
+    pub async fn wait_for_falling_edge(&mut self) {
+        self.input.wait_for_falling_edge().await;
+    }
+
+    /// Asynchronously waits for the input level to transition from one level to the other.
+    pub async fn wait_for_any_edge(&mut self) {
+        self.input.wait_for_any_edge().await;
+    }
 }
 
-#[cfg(feature = "external-interrupts")]
-impl embedded_hal_async::digital::Wait for IntEnabledInput<'_> {
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+#[doc(hidden)]
+impl<'a, P: IntEnabledPin> embedded_hal::digital::ErrorType for IntEnabledInput<'a, P> {
+    type Error = <HalIntEnabledInput<'a, P> as embedded_hal::digital::ErrorType>::Error;
+}
+
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+#[doc(hidden)]
+impl<'a, P: IntEnabledPin> embedded_hal::digital::ErrorType for IntEnabledInput<'a, P> {
+    type Error = <HalIntEnabledInput<'a, P> as embedded_hal::digital::ErrorType>::Error;
+}
+
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+impl<'a, P: IntEnabledPin> embedded_hal_async::digital::Wait for IntEnabledInput<'a, P> {
     async fn wait_for_high(&mut self) -> Result<(), Self::Error> {
-        <HalIntEnabledInput<'_> as embedded_hal_async::digital::Wait>::wait_for_high(
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_high(
             &mut self.input,
         )
         .await
     }
 
     async fn wait_for_low(&mut self) -> Result<(), Self::Error> {
-        <HalIntEnabledInput<'_> as embedded_hal_async::digital::Wait>::wait_for_low(&mut self.input)
-            .await
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_low(
+            &mut self.input,
+        )
+        .await
     }
 
     async fn wait_for_rising_edge(&mut self) -> Result<(), Self::Error> {
-        <HalIntEnabledInput<'_> as embedded_hal_async::digital::Wait>::wait_for_rising_edge(
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_rising_edge(
             &mut self.input,
         )
         .await
     }
 
     async fn wait_for_falling_edge(&mut self) -> Result<(), Self::Error> {
-        <HalIntEnabledInput<'_> as embedded_hal_async::digital::Wait>::wait_for_falling_edge(
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_falling_edge(
             &mut self.input,
         )
         .await
     }
 
     async fn wait_for_any_edge(&mut self) -> Result<(), Self::Error> {
-        <HalIntEnabledInput<'_> as embedded_hal_async::digital::Wait>::wait_for_any_edge(
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_any_edge(
+            &mut self.input,
+        )
+        .await
+    }
+}
+
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+impl<'a, P: IntEnabledPin> embedded_hal_async::digital::Wait for IntEnabledInput<'a, P> {
+    async fn wait_for_high(&mut self) -> Result<(), Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_high(
+            &mut self.input,
+        )
+        .await
+    }
+
+    async fn wait_for_low(&mut self) -> Result<(), Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_low(
+            &mut self.input,
+        )
+        .await
+    }
+
+    async fn wait_for_rising_edge(&mut self) -> Result<(), Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_rising_edge(
+            &mut self.input,
+        )
+        .await
+    }
+
+    async fn wait_for_falling_edge(&mut self) -> Result<(), Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_falling_edge(
+            &mut self.input,
+        )
+        .await
+    }
+
+    async fn wait_for_any_edge(&mut self) -> Result<(), Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal_async::digital::Wait>::wait_for_any_edge(
             &mut self.input,
         )
         .await
@@ -204,8 +307,27 @@ macro_rules! impl_embedded_hal_input_trait {
 }
 
 impl_embedded_hal_input_trait!(Input<'_>, HalInput<'_>);
-#[cfg(feature = "external-interrupts")]
-impl_embedded_hal_input_trait!(IntEnabledInput<'_>, HalIntEnabledInput<'_>);
+#[cfg(all(feature = "external-interrupts", context = "avr"))]
+impl<'a, P: IntEnabledPin> embedded_hal::digital::InputPin for IntEnabledInput<'a, P> {
+    fn is_high(&mut self) -> Result<bool, Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal::digital::InputPin>::is_high(&mut self.input)
+    }
+
+    fn is_low(&mut self) -> Result<bool, Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal::digital::InputPin>::is_low(&mut self.input)
+    }
+}
+
+#[cfg(all(feature = "external-interrupts", not(context = "avr")))]
+impl<'a, P: IntEnabledPin> embedded_hal::digital::InputPin for IntEnabledInput<'a, P> {
+    fn is_high(&mut self) -> Result<bool, Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal::digital::InputPin>::is_high(&mut self.input)
+    }
+
+    fn is_low(&mut self) -> Result<bool, Self::Error> {
+        <HalIntEnabledInput<'a, P> as embedded_hal::digital::InputPin>::is_low(&mut self.input)
+    }
+}
 
 pub mod input {
     //! Input-specific types.
@@ -305,7 +427,10 @@ pub mod input {
         /// In these cases, this returns an [`Error::InterruptChannel`], with a HAL-specific error.
         // FIXME: rename this
         #[cfg(feature = "external-interrupts")]
-        pub fn build_with_interrupt(self) -> Result<IntEnabledInput<'a>, Error> {
+        pub fn build_with_interrupt(self) -> Result<IntEnabledInput<'a, P>, Error>
+        where
+            P: super::IntEnabledPin,
+        {
             let pin = self.pin.into_hal_peripheral();
             let input = hal::gpio::input::new_int_enabled(pin, self.pull, self.schmitt_trigger)?;
 

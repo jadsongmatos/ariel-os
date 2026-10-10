@@ -143,6 +143,7 @@ dependencies = [
  "ariel-os-log",
  "ariel-os-random",
  "ariel-os-utils",
+ "avr-device",
  "critical-section",
  "embassy-avr",
  "embassy-executor",

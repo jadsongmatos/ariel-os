@@ -7,6 +7,12 @@ pub struct OptionalPeripherals {
     pub PB5: Option<Peri<'static, crate::peripherals::PB5>>,
     pub PD7: Option<Peri<'static, crate::peripherals::PD7>>,
     pub PC0: Option<Peri<'static, crate::peripherals::PC0>>,
+    pub PD0: Option<Peri<'static, crate::peripherals::PD0>>,
+    pub PD1: Option<Peri<'static, crate::peripherals::PD1>>,
+    pub PD2: Option<Peri<'static, crate::peripherals::PD2>>,
+    pub PD3: Option<Peri<'static, crate::peripherals::PD3>>,
+    #[cfg(feature = "storage")]
+    pub EEPROM: Option<Peri<'static, embassy_avr::mcu::pac::EEPROM>>,
 }
 
 #[cfg(not(feature = "arduino-uno"))]
@@ -40,6 +46,12 @@ impl From<Peripherals> for OptionalPeripherals {
             PB5: None,
             PD7: None,
             PC0: None,
+            PD0: None,
+            PD1: None,
+            PD2: None,
+            PD3: None,
+            #[cfg(feature = "storage")]
+            EEPROM: None,
         }
     }
 }
