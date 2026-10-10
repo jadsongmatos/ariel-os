@@ -1396,6 +1396,18 @@ modules:
         RUSTFLAGS:
           - -Clink-arg=-Tstorage.x
 
+  # On AVR the storage is the EEPROM, an address space of its own, so there is
+  # no linker script: `ariel-os-storage` uses a fixed range. A `-T` would also
+  # replace avr-libc's default linker script instead of adding to it.
+  - name: sw/storage
+    context: avr
+    selects:
+      - has_storage_support
+    env:
+      global:
+        FEATURES:
+          - ariel-os/storage
+
   - name: has_storage_support
     selects:
       - doc-only

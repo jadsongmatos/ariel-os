@@ -3,6 +3,13 @@ use std::{env, path::PathBuf};
 const KIBIBYTES: u32 = 1024;
 
 fn main() {
+    // On AVR the storage is the EEPROM, an address space of its own: the linker places nothing
+    // there, so there is no linker script to write, and `src/lib.rs` uses a fixed range.
+    if is_in_current_contexts(&["avr"]) {
+        println!("cargo:rerun-if-env-changed=CARGO_CFG_CONTEXT");
+        return;
+    }
+
     // NOTE(hal): values of `flash_page_size` from the datasheets, confirmed by HAL's constants.
     // Important: only homogeneous flash organizations are currently supported.
     // Trying to restrict the storage size to the subset of homogeneous flash would not work as it

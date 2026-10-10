@@ -5,7 +5,8 @@
 
 #![cfg_attr(not(test), no_std)]
 #![deny(missing_docs)]
-#![expect(unsafe_code)]
+// AVR reads no linker symbols, so it has no unsafe code here.
+#![cfg_attr(not(context = "avr"), expect(unsafe_code))]
 // TODO: overhaul errors
 #![expect(clippy::missing_errors_doc)]
 
@@ -31,12 +32,20 @@ static STORAGE: OnceLock<Mutex<CriticalSectionRawMutex, Storage<Flash>>> = OnceL
 const MARKER_KEY: &str = "ARIEL_INIT_MARK";
 const MARKER_VALUE: u8 = 0;
 
+/// Range of the global [`Storage`] on AVR: the whole 1 KiB EEPROM of the `ATmega328P`.
+///
+/// The EEPROM is an address space of its own, starting at zero, so the linker places nothing
+/// there and has no symbols to provide.
+#[cfg(context = "avr")]
+const AVR_STORAGE_RANGE: Range<u32> = 0..1024;
+
 /// Gets a [`Range`] from the linker that can be used for a global [`Storage`].
 ///
 /// This expects two symbols `__storage_start` and `__storage_end`.
 /// This function is also the place to configure a platform dependent `OFFSET`,
 /// which configures an offset between the linker flash address map and the
 /// flash driver address map.
+#[cfg(not(context = "avr"))]
 fn flash_range_from_linker() -> Range<u32> {
     #[cfg(all(context = "nrf", not(context = "nrf5340-net")))]
     const OFFSET: usize = 0x0;
@@ -66,6 +75,9 @@ fn flash_range_from_linker() -> Range<u32> {
 
 fn init_(p: &mut OptionalPeripherals) {
     use ariel_os_log::info;
+    #[cfg(context = "avr")]
+    let flash_range = AVR_STORAGE_RANGE;
+    #[cfg(not(context = "avr"))]
     let flash_range = flash_range_from_linker();
     info!("storage: using flash range {:?}", &flash_range);
 
@@ -81,6 +93,13 @@ fn init_(p: &mut OptionalPeripherals) {
 ///
 /// Panics when initializing the flash fails.
 #[doc(hidden)]
+#[cfg_attr(
+    context = "avr",
+    expect(
+        clippy::unused_async,
+        reason = "only the other platforms check the marker"
+    )
+)]
 pub async fn init(p: &mut OptionalPeripherals) {
     init_(p);
 
@@ -92,6 +111,13 @@ pub async fn init(p: &mut OptionalPeripherals) {
     embassy_time::block_for(embassy_time::Duration::from_millis(10));
 
     // Use a marker to ensure that this storage is initialized.
+    //
+    // AVR skips the check. Awaiting it here compiles a second copy of the map code of
+    // `sequential_storage`, next to the one for the calls of the application, and each copy
+    // takes around 12 KiB of the 32 KiB of flash of an ATmega328P. The EEPROM of a board
+    // that never stored anything reads as erased, which the map accepts; if it holds data
+    // of another firmware, reads fail until [`erase_all()`] clears it.
+    #[cfg(not(context = "avr"))]
     if Ok(Some(MARKER_VALUE)) != get::<u8>(MARKER_KEY).await {
         ariel_os_log::info!("storage: initializing");
         erase_all().await.unwrap();
