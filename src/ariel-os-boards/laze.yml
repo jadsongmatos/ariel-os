@@ -25,7 +25,9 @@ builders:
 - name: arduino-uno-board
   parent: atmega328p
   provides:
+  - has_buttons
   - has_leds
+  - has_host_facing_uart
 
 - name: bbc-microbit-v1
   parent: nrf51822-xxaa

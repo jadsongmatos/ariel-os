@@ -9,3 +9,11 @@ targets:
     buttons:
       # built-in button on D2 (PD2 / INT0)
       - pin: PD2
+    uarts:
+      # USB serial (D0/D1), bridged to USB by the ATmega16U2
+      - aliases:
+          - Serial
+        tx_pin: PD1
+        rx_pin: PD0
+        possible_peripherals: [USART0]
+        host_facing: true
