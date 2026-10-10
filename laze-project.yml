@@ -1218,6 +1218,27 @@ modules:
         FEATURES:
           - ariel-os/timer-generic-queue-8
 
+  # AVR has no threads, so every waker comes from the executor and the
+  # integrated timer queue works. It uses the timer item that each task
+  # reserves anyway, instead of the 96 bytes that an 8-slot generic queue
+  # takes on the 2 KiB of an ATmega328P.
+  - name: ram-tiny
+    context: avr
+    help: This module marks boards with very little RAM (currently, <=16KiB)
+    conflicts:
+      # disabling alloc until we have a usable use case
+      - alloc
+      # embedded-test currently hard-codes a 16KiB stack for its thread
+      - embedded-test
+      # disabling as the default stack sizes are too small for log (defmt works)
+      - log
+      # disabling until we do have a driver/stack combo that works
+      - network
+    env:
+      global:
+        isr_stacksize_required_default: "512"
+        executor_stacksize_required_default: "512"
+
   - name: ram-small
     help: This module marks MCUs with little RAM (currently, the ones which cannot run HTTP or CoAP)
 
