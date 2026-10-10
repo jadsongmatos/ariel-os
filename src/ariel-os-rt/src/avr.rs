@@ -8,16 +8,15 @@
 //
 // Instead, we use .ctors-based registration: the macros generate
 // `#[link_section = ".ctors"]` static function pointers in flash.
-// Our `run_ctors()` function iterates `.ctors` using LPM + ICALL (inline asm),
-// calling each registration function which stores its function pointer in a
-// static array in SRAM.  After `run_ctors()` completes, `startup()` iterates
-// these arrays to run init functions and spawn embassy tasks.
+// libgcc's `__do_global_ctors`, which avr-gcc uses for C++ constructors,
+// calls each registration function at startup, in the `.init6` section,
+// before `main`; each one stores its function pointer in a static array in
+// SRAM. `startup()` then iterates these arrays to run init functions and
+// spawn embassy tasks.
 //
-// We call `run_ctors()` from `main()` (the #[avr_device::entry] function),
-// NOT from a `.init6` section, because:
-//   - `.init6` naked functions get dead-stripped by the linker on AVR.
-//   - `asm!` inside a regular function inherits target-cpu features,
-//     while `global_asm!` does not.
+// `__do_global_ctors` walks the table from its end, so the registrations run
+// in reverse link order; like the order of linkme's slices, it is
+// unspecified.
 
 use core::sync::atomic::{AtomicUsize, Ordering};
 
@@ -25,7 +24,8 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 const INIT_FUNCS_MAX: usize = 16;
 
 /// Runtime array of init functions, populated by .ctors registration.
-/// Initialized to [None; 16] by .bss zeroing, then filled by run_ctors().
+/// Initialized to [None; 16] by .bss zeroing, then filled by the registration
+/// functions.
 #[allow(static_mut_refs)]
 static mut INIT_FUNCS_BUF: [Option<fn()>; INIT_FUNCS_MAX] = [None; INIT_FUNCS_MAX];
 
@@ -35,8 +35,9 @@ static INIT_FUNCS_LEN: AtomicUsize = AtomicUsize::new(0);
 /// Register an init function at startup (called from .ctors registration).
 ///
 /// # Safety
-/// Must only be called from .ctors registration functions during run_ctors(),
-/// before the executor starts.  Not safe to call concurrently or after startup.
+/// Must only be called from .ctors registration functions, which
+/// `__do_global_ctors` runs before `main`.  Not safe to call concurrently or
+/// after startup.
 pub fn register_init_func(f: fn()) {
     let idx = INIT_FUNCS_LEN.load(Ordering::Relaxed);
     if idx < INIT_FUNCS_MAX {
@@ -59,83 +60,30 @@ pub(crate) fn init_funcs() -> impl Iterator<Item = fn()> {
     (0..len).filter_map(move |i| unsafe { *buf.add(i) })
 }
 
-// Linker-provided symbols bounding the .ctors section (defined in avr5.x).
 unsafe extern "C" {
-    static __ctors_start: u8;
-    static __ctors_end: u8;
+    /// The constructor runner of libgcc, in the `.init6` startup section.
+    ///
+    /// It calls every function of the `.ctors` table, from the last to the first, after the
+    /// startup code initialized `.data` and `.bss`, and before `main`.
+    fn __do_global_ctors();
 }
 
-/// Iterate the `.ctors` section (in flash) and call each registration function.
+/// Makes the linker take [`__do_global_ctors`] from libgcc, which it only does for a referenced
+/// symbol. Nothing calls the function: it runs as part of the startup code.
 ///
-/// Each entry in `.ctors` is a 2-byte function pointer (word address in flash).
-/// We read it with LPM (Load Program Memory), then ICALL (Indirect Call).
-///
-/// `asm!` inside a regular function inherits `-C target-cpu=atmega328p` features,
-/// so `lpm` and `icall` are available without needing `global_asm!`.
-///
-/// # Safety
-/// Must be called once, before the executor starts and before any task spawns.
-pub(crate) unsafe fn run_ctors() {
-    // Z (r31:r30) = __ctors_start (LPM pointer into flash)
-    // Y (r29:r28) = __ctors_end (loop bound)
-    // r24:r25 = scratch for LPM'd function pointer
-    //
-    // Flow:
-    //   1. Z = __ctors_start, Y = __ctors_end
-    //   2. If Z == Y, done
-    //   3. LPM 2-byte fn pointer from flash (Z auto-increments)
-    //   4. Save Z (call-clobbered), move fn ptr to Z, ICALL, restore Z
-    //   5. Loop to step 2
-    unsafe {
-        core::arch::asm!(
-            // Z (r31:r30) = __ctors_start (LPM pointer into flash)
-            "ldi r30, lo8({start})",
-            "ldi r31, hi8({start})",
-            // Y (r29:r28) = __ctors_end (loop bound)
-            "ldi r28, lo8({end})",
-            "ldi r29, hi8({end})",
-            // Loop: if Z == Y, done
-            "2:",
-            "cp  r30, r28",
-            "cpc r31, r29",
-            "breq 3f",
-            // LPM 2-byte fn pointer from flash via Z+ (auto-increments)
-            "lpm r24, Z+",
-            "lpm r25, Z+",
-            // Save Z (call-clobbered by ICALL)
-            "push r30",
-            "push r31",
-            // Move fn ptr to Z for ICALL
-            "mov r30, r24",
-            "mov r31, r25",
-            "icall",
-            // Restore Z
-            "pop r31",
-            "pop r30",
-            "rjmp 2b",
-            "3:",
-            start = sym __ctors_start,
-            end = sym __ctors_end,
-            options(nostack),
-        );
-        // The ICALL calls registration functions that write to static arrays in
-        // SRAM.  The asm! block's implicit "~{memory}" clobber ensures the
-        // optimizer does not assume these arrays are still zeroed after
-        // run_ctors(), which would cause it to optimize away the executor.
-    }
-}
+/// `.progmem.data` keeps the pointer in flash; other read-only data would be copied to RAM.
+#[used]
+#[unsafe(link_section = ".progmem.data")]
+static DO_GLOBAL_CTORS: unsafe extern "C" fn() = __do_global_ctors;
 
-/// Entry point for AVR — called by the reset vector after .bss/.data init.
+/// Entry point for AVR, called at the end of the startup code.
 ///
-/// The `avr-device` crate with the `rt` feature provides the `#[entry]`
-/// macro which generates the appropriate reset vector entry point and
-/// performs standard startup initialization (zeroing .bss, copying .data
-/// from flash, setting up the stack pointer).
+/// The startup code of avr-libc and libgcc runs first: it zeroes `r1`, copies `.data` from
+/// flash, zeroes `.bss`, and runs the `.ctors` registrations. The `#[entry]` macro of the
+/// `avr-device` crate, with its `rt` feature, places `main` in `.init9`, after all of them.
 #[cfg(not(feature = "embedded-test"))]
 #[avr_device::entry]
 fn main() -> ! {
-    // Run .ctors registration functions to populate init/task arrays in SRAM.
-    unsafe { run_ctors(); }
     crate::startup();
 }
 

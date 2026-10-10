@@ -386,8 +386,9 @@ contexts:
         # needs this gate on every crate in the AVR build.
         - -Zcrate-attr=feature(impl_trait_in_assoc_type)
         # Option B: linkme is NOT used on AVR.  Task/init registration uses
-        # .ctors + .init6 (LPM/ICALL) instead of linkme::distributed_slice.
-        # The stock avr5.x linker script from avr-libc handles .ctors natively.
+        # .ctors instead of linkme::distributed_slice: libgcc's
+        # __do_global_ctors runs the table in .init6, and the stock avr5.x
+        # linker script from avr-libc handles .ctors natively.
       CARGO_WRAPPER: ""
       # No `cargo run` support for AVR; a no-op runner keeps
       # CARGO_TARGET_AVR_NONE_RUNNER valid for cargo config parsing.

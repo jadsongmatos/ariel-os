@@ -5,7 +5,7 @@
 #![deny(missing_docs)]
 #![allow(incomplete_features)]
 #![allow(unsafe_code)]
-#![cfg_attr(any(context = "xtensa", context = "avr"), feature(asm_experimental_arch))]
+#![cfg_attr(context = "xtensa", feature(asm_experimental_arch))]
 
 pub mod stack;
 
