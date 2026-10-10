@@ -21,7 +21,7 @@ fn main() {
             "esp32c3" => ("INSERT AFTER .rwdata_dummy;", "RWDATA"),
             "cortex-m" => ("INSERT BEFORE .data;", "RAM"),
             "riscv" => ("INSERT BEFORE .trap;", "RWDATA"),
-            
+
             _ => unreachable!(),
         };
 
@@ -57,7 +57,6 @@ fn main() {
     std::fs::copy("linkme.x", out.join("linkme.x")).unwrap();
     std::fs::copy("eheap.x", out.join("eheap.x")).unwrap();
     std::fs::copy("keep-stack-sizes.x", out.join("keep-stack-sizes.x")).unwrap();
-
 
     #[cfg(feature = "memory-x")]
     write_memoryx();

@@ -40,9 +40,12 @@ static INIT_FUNCS_LEN: AtomicUsize = AtomicUsize::new(0);
 pub fn register_init_func(f: fn()) {
     let idx = INIT_FUNCS_LEN.load(Ordering::Relaxed);
     if idx < INIT_FUNCS_MAX {
-        unsafe {
-            INIT_FUNCS_BUF[idx] = Some(f);
-        }
+        let buf = core::ptr::addr_of_mut!(INIT_FUNCS_BUF).cast::<Option<fn()>>();
+        // SAFETY: `idx` is below `INIT_FUNCS_MAX`, so `buf.add(idx)` stays inside
+        // `INIT_FUNCS_BUF`. This runs only from the `.ctors` registration functions,
+        // before the executor starts; see the `# Safety` section. `addr_of_mut!`
+        // gives a raw pointer, so no reference to the mutable static is created.
+        unsafe { buf.add(idx).write(Some(f)) };
         INIT_FUNCS_LEN.store(idx + 1, Ordering::Relaxed);
     }
 }
@@ -50,7 +53,10 @@ pub fn register_init_func(f: fn()) {
 /// Return an iterator over registered init functions (AVR runtime registry).
 pub(crate) fn init_funcs() -> impl Iterator<Item = fn()> {
     let len = INIT_FUNCS_LEN.load(Ordering::Relaxed);
-    (0..len).filter_map(move |i| unsafe { INIT_FUNCS_BUF[i] })
+    let buf = core::ptr::addr_of!(INIT_FUNCS_BUF).cast::<Option<fn()>>();
+    // SAFETY: `i` is below `len`, which never exceeds `INIT_FUNCS_MAX`, and the
+    // registry is filled before the executor starts.
+    (0..len).filter_map(move |i| unsafe { *buf.add(i) })
 }
 
 // Linker-provided symbols bounding the .ctors section (defined in avr5.x).

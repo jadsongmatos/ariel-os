@@ -41,11 +41,11 @@ use linkme::distributed_slice;
 
 // All items of this module are re-exported at the root of `ariel_os`.
 pub mod api {
-    pub use crate::{asynch, delegate};
     #[cfg(not(target_arch = "avr"))]
     pub use crate::EMBASSY_TASKS;
     #[cfg(target_arch = "avr")]
     pub use crate::register_embassy_task;
+    pub use crate::{asynch, delegate};
 
     pub mod cell {
         //! Shareable containers.
@@ -170,9 +170,12 @@ static EMBASSY_TASKS_LEN: core::sync::atomic::AtomicUsize = core::sync::atomic::
 pub fn register_embassy_task(task: Task) {
     let idx = EMBASSY_TASKS_LEN.load(core::sync::atomic::Ordering::Relaxed);
     if idx < EMBASSY_TASKS_MAX {
-        unsafe {
-            EMBASSY_TASKS_BUF[idx] = Some(task);
-        }
+        // SAFETY: `idx` is below `EMBASSY_TASKS_MAX`, so `buf.add(idx)` stays inside
+        // `EMBASSY_TASKS_BUF`. This runs only from the `.ctors` registration
+        // functions, before the executor starts. `addr_of_mut!` gives a raw
+        // pointer, so no reference to the mutable static is created.
+        let buf = core::ptr::addr_of_mut!(EMBASSY_TASKS_BUF).cast::<Option<Task>>();
+        unsafe { buf.add(idx).write(Some(task)) };
         EMBASSY_TASKS_LEN.store(idx + 1, core::sync::atomic::Ordering::Relaxed);
     }
 }
@@ -181,7 +184,10 @@ pub fn register_embassy_task(task: Task) {
 #[cfg(target_arch = "avr")]
 pub(crate) fn embassy_tasks() -> impl Iterator<Item = Task> {
     let len = EMBASSY_TASKS_LEN.load(core::sync::atomic::Ordering::Relaxed);
-    (0..len).filter_map(move |i| unsafe { EMBASSY_TASKS_BUF[i] })
+    let buf = core::ptr::addr_of!(EMBASSY_TASKS_BUF).cast::<Option<Task>>();
+    // SAFETY: `i` is below `len`, which never exceeds `EMBASSY_TASKS_MAX`, and the
+    // registry is filled before the executor starts.
+    (0..len).filter_map(move |i| unsafe { *buf.add(i) })
 }
 
 #[cfg(all(
