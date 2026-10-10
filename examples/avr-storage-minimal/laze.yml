@@ -1,0 +1,6 @@
+apps:
+  - name: avr-storage-minimal
+    selects:
+      - sw/storage
+      # The count goes out on the USB serial port.
+      - has_host_facing_uart

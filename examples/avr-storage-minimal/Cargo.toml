@@ -1,0 +1,13 @@
+[package]
+name = "avr-storage-minimal"
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+ariel-os = { path = "../../src/ariel-os", features = ["arduino-uno", "uart"] }
+ariel-os-boards = { path = "../../src/ariel-os-boards" }
+embedded-io-async = { workspace = true }
+
+[lints]
+workspace = true
