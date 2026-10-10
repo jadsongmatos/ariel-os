@@ -96,7 +96,7 @@ pub mod log {
         feature = "esp-println" => {
             pub use esp_println::println;
         }
-        feature = "std" => {
+        feature = "logging-over-stdout" => {
             pub use std::println;
         }
         any(feature = "internal-transport-driver", feature = "custom-transport-driver") => {

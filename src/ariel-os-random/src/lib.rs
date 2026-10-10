@@ -251,13 +251,13 @@ pub struct RngAdapter<'a, R: rand_core_06::RngCore>(pub &'a mut R);
 
 impl<R: rand_core_06::RngCore> RngCore for RngAdapter<'_, R> {
     fn next_u32(&mut self) -> u32 {
-        rand_core_06::RngCore::next_u32(&mut self.0)
+        rand_core_06::RngCore::next_u32(self.0)
     }
     fn next_u64(&mut self) -> u64 {
-        rand_core_06::RngCore::next_u64(&mut self.0)
+        rand_core_06::RngCore::next_u64(self.0)
     }
     fn fill_bytes(&mut self, dest: &mut [u8]) {
-        rand_core_06::RngCore::fill_bytes(&mut self.0, dest);
+        rand_core_06::RngCore::fill_bytes(self.0, dest);
     }
 }
 

@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   nrf9151-dk:
     chip: nrf9151
@@ -44,6 +44,14 @@ targets:
         active: low
         aliases:
           - Button 4
+    i2c:
+      # Only available when a shield is inserted and if enabled by the interface
+      # MCU using the nRF Connect for Desktop application.
+      - sda_pin: P0_30
+        scl_pin: P0_31
+        possible_peripherals:
+          - SERIAL0
+          - SERIAL1
     uarts:
       - aliases:
           - VCOM0

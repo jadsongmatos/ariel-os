@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 # Note that the "kit" is really part of the board name, and not the
 # composition of the board with the pin headers and the antennas: It says
 # "nRF9151 Connect Kit" on the board's silkscreen.
@@ -16,3 +16,9 @@ targets:
         active: low # … and no built-in pull-up.
         aliases:
           - USR
+    uarts:
+      - tx_pin: P0_11
+        rx_pin: P0_12
+        # FIXME: Is this exhaustive? (Seems those are all we have in Ariel right now)
+        possible_peripherals: [SERIAL3]
+        host_facing: true

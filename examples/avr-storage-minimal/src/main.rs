@@ -19,7 +19,7 @@ async fn main(peripherals: ariel_os_boards::pins::HOST_FACING_UART) {
     let mut config = hal::uart::Config::default();
     config.baudrate = Baudrate::_57600;
     let mut uart = peripherals
-        .with_config(&mut rx_buf, &mut tx_buf, config)
+        .build_with_config(&mut rx_buf, &mut tx_buf, config)
         .unwrap();
 
     // Writes to the UART never fail, so their results are ignored.

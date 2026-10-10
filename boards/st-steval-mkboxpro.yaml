@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-steval-mkboxpro:
     chip: stm32u585ai
@@ -10,7 +10,7 @@ targets:
       global_env:
         CARGO_ENV:
           - CONFIG_VBUS_DETECTION=false
-          - CONFIG_SWI=USART2
+          - CONFIG_SWI=WWDG
     leds:
       # led0
       - pin: PF6
@@ -45,3 +45,9 @@ targets:
       - pin: PE0
         aliases:
           - BT2
+    i2c:
+      - sda_pin: PB7
+        scl_pin: PB6
+        possible_peripherals:
+          - I2C1
+          - I2C4

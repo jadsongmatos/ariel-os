@@ -1,9 +1,9 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-nucleo-g431rb:
     chip: stm32g431rb
     ariel:
-      swi: USART2
+      swi: WWDG
     leds:
       # led0
       - pin: PA5

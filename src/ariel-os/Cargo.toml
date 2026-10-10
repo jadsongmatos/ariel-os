@@ -1,6 +1,6 @@
 [package]
 name = "ariel-os"
-version = "0.5.0"
+version = "0.6.0"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -136,10 +136,17 @@ network-config-override = ["ariel-os-embassy/network-config-override"]
 rcc-config-override = ["ariel-os-embassy/rcc-config-override"]
 ## Enables custom USB configuration.
 override-usb-config = ["ariel-os-embassy/override-usb-config"]
+# Suppresses the built-in app descriptor so the application can emit its own.
+# Currently only useful on ESP32.
+custom-app-descriptor = ["ariel-os-embassy/custom-app-descriptor"]
 
 #! ## Multicore functionality
 ## Enables support for core affinities (restricting threads to specific cores).
-core-affinity = ["ariel-os-threads?/core-affinity", "multi-core"]
+core-affinity = [
+  "ariel-os-macros/core-affinity",
+  "ariel-os-threads?/core-affinity",
+  "multi-core",
+]
 # Exactly one of the features below must be enabled at once.
 # Selection of these should be done through laze configuration.
 # Enables one single core, even if the hardware provides multiple cores.
@@ -191,7 +198,7 @@ ble-peripheral = ["ariel-os-embassy/ble-peripheral", "ble"]
 ble-config-static-address = ["ariel-os-embassy/ble-config-static-address"]
 
 # ## Enables support for the nRF91xx SiP modem.
-nrf91-modem = ["ariel-os-embassy/nrf91-modem", "ariel-os-rt/nrf91-modem"]
+nrf91-modem = ["ariel-os-embassy/nrf91-modem"]
 # Adjusts nRF modem (or related components) to assume that there is the DECT firmware running on the radio core.
 nrf-radiocore-firmware-dect = ["ariel-os-nrf/radiocore-firmware-dect"]
 
@@ -243,7 +250,9 @@ defmt-rtt = ["ariel-os-log/defmt-rtt"]
 esp-println = ["ariel-os-log/esp-println"]
 semihosting = ["ariel-os-debug/semihosting"]
 # Log transport defined by the application.
-custom-logging-transport = ["ariel-os-log/custom-transport-driver"]
+logging-over-custom-transport = ["ariel-os-log/custom-transport-driver"]
+# Logging over stdout (only available on native).
+logging-over-stdout = ["ariel-os-log/logging-over-stdout"]
 
 net = ["ariel-os-embassy/net"]
 

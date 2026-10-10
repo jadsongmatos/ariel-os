@@ -1,11 +1,11 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-nucleo-f767zi:
     chip: stm32f767zi
     flags:
       - has_ethernet_stm32
     ariel:
-      swi: USART2
+      swi: WWDG
     leds:
       # led0
       - pin: PB0

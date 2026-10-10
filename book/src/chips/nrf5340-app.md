@@ -19,7 +19,7 @@
 |Ethernet over USB|<span title="supported">✅</span>|
 |Wi-Fi|<span title="not available on this piece of hardware">–</span>|
 |Bluetooth Low Energy|<span title="not available on this piece of hardware">–</span>|
-|Hardware Random Number Generator|<span title="available in hardware, but not currently supported by Ariel OS">❌</span>[^no-standalone-rng-in-the-application-core-only-in-the-cryptocell-which-is-not-currently-supported]|
+|Hardware Random Number Generator|<span title="supported">✅</span>|
 |Persistent Storage|<span title="supported">✅</span>|
 
 <p>Legend:</p>
@@ -99,7 +99,7 @@ Boards using this chip.
 		  <td class="support-cell" title="supported">✅</td>
 		  <td class="support-cell" title="not available on this piece of hardware">–</td>
 		  <td class="support-cell" title="not available on this piece of hardware">–</td>
-		  <td class="support-cell" title="available in hardware, but not currently supported by Ariel OS">❌</td>
+		  <td class="support-cell" title="supported">✅</td>
 		  <td class="support-cell" title="supported">✅</td>
       </tr>
 	  </tbody>
@@ -121,7 +121,7 @@ Boards using this chip.
 		  <td class="support-cell" title="supported">✅</td>
 		  <td class="support-cell" title="available in hardware, but not currently supported by Ariel OS">❌</td>
 		  <td class="support-cell" title="not available on this piece of hardware">–</td>
-		  <td class="support-cell" title="available in hardware, but not currently supported by Ariel OS">❌</td>
+		  <td class="support-cell" title="supported">✅</td>
 		  <td class="support-cell" title="supported">✅</td>
       </tr>
 	  </tbody>
@@ -191,5 +191,3 @@ dt, dd {
 </style>
 
 
-
-[^no-standalone-rng-in-the-application-core-only-in-the-cryptocell-which-is-not-currently-supported]: No standalone RNG in the application core, only in the CryptoCell which is not currently supported.

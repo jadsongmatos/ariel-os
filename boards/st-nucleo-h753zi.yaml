@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-nucleo-h753zi:
     chip: stm32h753zi
@@ -6,7 +6,7 @@ targets:
       - has_ethernet_stm32
       - has_usb_device_port
     ariel:
-      swi: UART5
+      swi: WWDG
     leds:
       # led0
       - pin: PB0

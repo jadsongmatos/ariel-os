@@ -1,0 +1,42 @@
+version: 0.4.1
+targets:
+  st-b-l072z-lrwan1:
+    chip: stm32l072cz
+    # The USB user connector (CN11) is not connected to the MCU by default: solder bridges SB15
+    # and SB16 need to be closed to connect USB D- (PA11) and D+ (PA12).
+    # flags:
+    #   - has_usb_device_port
+    ariel:
+      swi: WWDG
+    leds:
+      # led0
+      - pin: PB5
+        aliases:
+          - LD1
+        color: green
+      # led1
+      - pin: PA5
+        aliases:
+          - LD2
+        color: red
+      # led2
+      - pin: PB6
+        aliases:
+          - LD3
+        color: blue
+      # led3
+      - pin: PB7
+        aliases:
+          - LD4
+        color: red
+    buttons:
+      # button0
+      - pin: PB2
+    i2c:
+      # SDA/D14 and SCL/D15 on the Arduino connector
+      - sda_pin: PB9
+        scl_pin: PB8
+        possible_peripherals:
+          - I2C1
+        aliases:
+          - ArduinoI2c

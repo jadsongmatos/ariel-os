@@ -17,9 +17,12 @@ cfg_if::cfg_if! {
     #[cfg(context = "espressif-esp32-c6-devkitc-1")] {
     include!("espressif-esp32-c6-devkitc-1.rs"); } else if #[cfg(context =
     "espressif-esp32-devkitc")] { include!("espressif-esp32-devkitc.rs"); } else if
-    #[cfg(context = "espressif-esp32-s2-devkitc-1")] {
-    include!("espressif-esp32-s2-devkitc-1.rs"); } else if #[cfg(context =
-    "espressif-esp32-s3-devkitc-1")] { include!("espressif-esp32-s3-devkitc-1.rs"); }
+    #[cfg(context = "espressif-esp32-h2-devkitm-1")] {
+    include!("espressif-esp32-h2-devkitm-1.rs"); } else if #[cfg(context =
+    "espressif-esp32-s2-devkitc-1")] { include!("espressif-esp32-s2-devkitc-1.rs"); }
+    else if #[cfg(context = "espressif-esp32-s3-devkitc-1")] {
+    include!("espressif-esp32-s3-devkitc-1.rs"); } else if #[cfg(context =
+    "espressif-esp8684-devkitc-02")] { include!("espressif-esp8684-devkitc-02.rs"); }
     else if #[cfg(context = "heltec-wifi-lora-32-v3")] {
     include!("heltec-wifi-lora-32-v3.rs"); } else if #[cfg(context =
     "makerdiary-nrf52840-mdk-usb-dongle")] {
@@ -47,6 +50,7 @@ cfg_if::cfg_if! {
     #[cfg(context = "seeedstudio-xiao-esp32c6")] {
     include!("seeedstudio-xiao-esp32c6.rs"); } else if #[cfg(context =
     "seeedstudio-xiao-nrf52840-plus")] { include!("seeedstudio-xiao-nrf52840-plus.rs"); }
+    else if #[cfg(context = "st-b-l072z-lrwan1")] { include!("st-b-l072z-lrwan1.rs"); }
     else if #[cfg(context = "st-b-l475e-iot01a")] { include!("st-b-l475e-iot01a.rs"); }
     else if #[cfg(context = "st-nucleo-c031c6")] { include!("st-nucleo-c031c6.rs"); }
     else if #[cfg(context = "st-nucleo-f042k6")] { include!("st-nucleo-f042k6.rs"); }

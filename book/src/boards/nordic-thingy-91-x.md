@@ -35,7 +35,7 @@ laze build -b nordic-thingy-91-x-nrf9151
 |Ethernet over USB|<span title="not available on this piece of hardware">–</span>|
 |Wi-Fi|<span title="available in hardware, but not currently supported by Ariel OS">❌</span>[^requires-supporting-the-onboard-nrf7002-chip]|
 |Bluetooth Low Energy|<span title="not available on this piece of hardware">–</span>|
-|Hardware Random Number Generator|<span title="available in hardware, but not currently supported by Ariel OS">❌</span>[^only-available-through-the-cryptocell]|
+|Hardware Random Number Generator|<span title="supported">✅</span>|
 |Persistent Storage|<span title="supported">✅</span>|
 
 ### `nordic-thingy-91-x-nrf5340-app`
@@ -65,7 +65,7 @@ laze build -b nordic-thingy-91-x-nrf5340-app
 |Ethernet over USB|<span title="supported">✅</span>|
 |Wi-Fi|<span title="available in hardware, but not currently supported by Ariel OS">❌</span>[^requires-supporting-the-onboard-nrf7002-chip]|
 |Bluetooth Low Energy|<span title="not available on this piece of hardware">–</span>|
-|Hardware Random Number Generator|<span title="available in hardware, but not currently supported by Ariel OS">❌</span>[^no-standalone-rng-in-the-application-core-only-in-the-cryptocell-which-is-not-currently-supported]|
+|Hardware Random Number Generator|<span title="supported">✅</span>|
 |Persistent Storage|<span title="supported">✅</span>|
 
 ### `nordic-thingy-91-x-nrf5340-net`
@@ -126,10 +126,8 @@ dt, dd {
 
   
 [^requires-supporting-the-onboard-nrf7002-chip]: Requires supporting the onboard nRF7002 chip.
-[^only-available-through-the-cryptocell]: Only available through the CryptoCell.
   
 [^requires-supporting-the-onboard-nrf7002-chip]: Requires supporting the onboard nRF7002 chip.
-[^no-standalone-rng-in-the-application-core-only-in-the-cryptocell-which-is-not-currently-supported]: No standalone RNG in the application core, only in the CryptoCell which is not currently supported.
   
 [^pins-need-to-be-assigned-to-the-network-core-from-the-application-core]: Pins need to be assigned to the network core from the application core.
 [^requires-supporting-the-onboard-nrf7002-chip]: Requires supporting the onboard nRF7002 chip.

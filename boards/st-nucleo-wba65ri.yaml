@@ -1,11 +1,11 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-nucleo-wba65ri:
     chip: stm32wba65ri
     flags:
       - has_usb_device_port
     ariel:
-      swi: USART1
+      swi: WWDG
     leds:
       # led0
       - pin: PD8

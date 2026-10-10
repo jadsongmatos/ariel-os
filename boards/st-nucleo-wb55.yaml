@@ -1,11 +1,11 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-nucleo-wb55:
     chip: stm32wb55rg
     flags:
       - has_usb_device_port
     ariel:
-      swi: USART1
+      swi: WWDG
     leds:
       # led0
       - pin: PB5

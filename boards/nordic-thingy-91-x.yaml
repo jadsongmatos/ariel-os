@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   nordic-thingy-91-x-nrf9151:
     chip: nrf9151
@@ -15,6 +15,41 @@ targets:
     buttons:
       # button0
       - pin: P0_26
+    i2c:
+      - sda_pin: P0_09
+        scl_pin: P0_08
+        possible_peripherals:
+          - SERIAL0
+          - SERIAL1
+        aliases:
+          - QwiicI2c
+    uarts:
+      - aliases:
+          - VCOM0
+        # Note that the vendor's schematic file is labeled from the nRF53's perspective
+        tx_pin: P0_01
+        rx_pin: P0_00
+        # FIXME: Is this exhaustive? (Seems those are all we have in Ariel right now)
+        possible_peripherals: [SERIAL3]
+        # While this UART's existence is official at least in the sense that
+        # the schematic labels those pins VCOM0 TX/RX, that this is actually
+        # forwarded to the host is more of a convention upheld by the default
+        # firmware; sbd is not yet experessive enough to capture this in a
+        # machine-readable fashion.
+        host_facing: true
+      # Pins are correct, but SERIAL3 is already taken
+      # - aliases:
+      #   - VCOM1
+      #   tx_pin: P0_05
+      #   rx_pin: P0_04
+      #   # FIXME: Is this exhaustive? (Seems those are all we have in Ariel right now)
+      #   possible_peripherals: [SERIAL3]
+      #   # While this UART's existence is official at least in the sense that
+      #   # the schematic labels those pins VCOM1 TX/RX, that this is actually
+      #   # forwarded to the host is more of a convention upheld by the default
+      #   # firmware; sbd is not yet experessive enough to capture this in a
+      #   # machine-readable fashion.
+      #   host_facing: true
 
   nordic-thingy-91-x-nrf5340-app:
     chip: nrf5340-app
@@ -33,6 +68,14 @@ targets:
     buttons:
       # button0
       - pin: P0_24
+    i2c:
+      - sda_pin: P1_03
+        scl_pin: P1_02
+        possible_peripherals:
+          - SERIAL0
+          - SERIAL1
+        aliases:
+          - QwiicI2c
 
   nordic-thingy-91-x-nrf5340-net:
     chip: nrf5340-net

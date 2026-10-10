@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   arduino-uno-q:
     chip: stm32u585ai
@@ -8,7 +8,7 @@ targets:
       global_env:
         CARGO_ENV:
           - CONFIG_VBUS_DETECTION=false
-          - CONFIG_SWI=USART2
+          - CONFIG_SWI=WWDG
     leds:
       # led0
       - color: red
@@ -28,3 +28,25 @@ targets:
       # led5
       - color: blue
         pin: PH15
+    i2c:
+      # These pins have strong pull-ups suitable for I2C.
+      - sda_pin: PB11
+        scl_pin: PB10
+        possible_peripherals:
+          - I2C2
+        aliases:
+          - ArduinoI2c
+      - sda_pin: PD13
+        scl_pin: PD12
+        possible_peripherals:
+          - I2C4
+        aliases:
+          - QwiicI2c
+      # TODO: currently not allowed by sbd-gen because the peripheral is shared.
+      # These pins have strong pull-ups suitable for I2C.
+      # - sda_pin: PF15
+      #   scl_pin: PF14
+      #   possible_peripherals:
+      #     - I2C4
+      #   aliases:
+      #     - JmiscI2c

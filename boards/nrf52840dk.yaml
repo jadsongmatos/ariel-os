@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   nrf52840dk:
     chip: nrf52840
@@ -20,7 +20,6 @@ targets:
       # led3
       - color: green
         pin: P0_16
-
     buttons:
       # button0
       - pin: P0_11
@@ -34,6 +33,13 @@ targets:
       # button3
       - pin: P0_25
         active: low
+    i2c:
+      # Only available when a shield is inserted.
+      - sda_pin: P0_26
+        scl_pin: P0_27
+        possible_peripherals:
+          - TWISPI0
+          - TWISPI1
     uarts:
       - aliases:
           - VCOM0

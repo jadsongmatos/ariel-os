@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-header -->
 
+## [0.6.0] - 2026-10-07
+
+### Release Highlights
+
+- (nRF) The HWRNG is now supported on `nrf5340-app`, `nrf9151`, and `nrf9160` using the CryptoCell system. ([#1804](https://github.com/ariel-os/ariel-os/pull/1804))
+- WIZnet Ethernet chips connected via SPI are now supported. Support for boards can be added in-tree. ([#2237](https://github.com/ariel-os/ariel-os/pull/2237))
+- A custom logging transport can now be defined from the application. ([#2250](https://github.com/ariel-os/ariel-os/pull/2250))
+- The relationship between Ariel OS and its underlying HALs has been clarified in the book, and instructions on how and when to use them directly have been added. ([#2234](https://github.com/ariel-os/ariel-os/pull/2234))
+
+### Breaking Changes
+
+- `ariel_os::identity::interface_eui48()` does not return a globally unique EUI-48 *as-is* anymore when one is available, but instead returns a locally administered address as in other cases. ([#2355](https://github.com/ariel-os/ariel-os/pull/2355))
+- `embassy-nrf` has been updated to v0.9.0. ([#1804](https://github.com/ariel-os/ariel-os/pull/1804))
+- The `alloc` Cargo feature has been removed from the documentation: the `alloc` laze module should be used instead to enable the global allocator. ([#2149](https://github.com/ariel-os/ariel-os/pull/2149))
+
+### Fixed
+
+- The `i2c-scanner` example now succeeds in scanning when used on an RP MCU. ([#2297](https://github.com/ariel-os/ariel-os/pull/2297))
+- The `#[ariel_os::thread]` attribute macro now makes sure that the `core-affinity` Cargo feature is enabled when attempting to pin a thread. ([#2092](https://github.com/ariel-os/ariel-os/pull/2092))
+- The documentation of `SpiDevice` has been clarified to mention that the CS output should be set to high initially. ([#2226](https://github.com/ariel-os/ariel-os/pull/2226))
+- (ST NUCLEO-WBA55CG) A default clock configuration suited to that board is now provided. ([#2259](https://github.com/ariel-os/ariel-os/pull/2259))
+- (nRF91) The `sensors-debug` example now builds successfully when disabling the `nrf91-modem-sensor` laze module. ([#2220](https://github.com/ariel-os/ariel-os/pull/2220))
+- (CYW43) Some communication issues with the CYW43 chip on RPi Pico and Pico 2 boards have been fixed. ([#2206](https://github.com/ariel-os/ariel-os/pull/2206))
+- (ST NUCLEO-F4xx) The pin association of the user LED has been fixed. ([#2187](https://github.com/ariel-os/ariel-os/pull/2187))
+- (Xtensa) The build system now correctly acts on changing `isr_stacksize_required`. ([#2174](https://github.com/ariel-os/ariel-os/pull/2174))
+- (native) A scheduling bug that could lead to IPC errors on native has been fixed. ([#2160](https://github.com/ariel-os/ariel-os/pull/2160))
+- (Xtensa) Linking errors from the `test` laze task for Xtensa have been fixed by properly taking into account the required toolchain. ([#2155](https://github.com/ariel-os/ariel-os/pull/2155))
+- It is no longer possible to mistakenly create multiple driver instances for the same I2C/SPI/UART peripheral by providing different pins to them. ([#2147](https://github.com/ariel-os/ariel-os/pull/2147))
+- (ESP32) `espflash` is now configured to rely on its auto-detection of the log format (i.e., whether `defmt` is used) from metadata written into the ELF. Previously the expected log format was based on the log facade laze module (`defmt` or `log`) selected in the command printing logs. ([#2140](https://github.com/ariel-os/ariel-os/pull/2140))
+- The `defmt` Cargo feature is now enabled on the underlying executor crate when `defmt` is enabled on Ariel OS. ([#2141](https://github.com/ariel-os/ariel-os/pull/2141))
+
+### Added
+
+- (ESP32) The app descriptor that is otherwise provided by default can now be disabled by selecting the `custom-app-descriptor` laze module, if needed. ([#2357](https://github.com/ariel-os/ariel-os/pull/2357))
+- (RP2040) Support for obtaining a unique device identifier has been added, by retrieving the unique ID from the flash chip if available. ([#2354](https://github.com/ariel-os/ariel-os/pull/2354))
+- (RP235x) Support for obtaining a unique device identifier has been added, by retrieving the chip ID stored in OTP. ([#2239](https://github.com/ariel-os/ariel-os/pull/2239))
+- An initial page about the sensor API has been added to the book. ([#2344](https://github.com/ariel-os/ariel-os/pull/2344))
+- Documentation about the structured board descriptions introduced by Ariel OS has been added to the book. ([#2338](https://github.com/ariel-os/ariel-os/pull/2338))
+- I2C buses defined in SBD files are now exposed via `ariel-os-boards`. ([#2200](https://github.com/ariel-os/ariel-os/pull/2200))
+- A page about UART drivers has been added to the book. ([#2225](https://github.com/ariel-os/ariel-os/pull/2225))
+- A page dedicated to Ethernet support has been added to the book. ([#2242](https://github.com/ariel-os/ariel-os/pull/2242))
+- A page about pins and GPIOs has been added to the book. ([#2251](https://github.com/ariel-os/ariel-os/pull/2251))
+- A page about SPI drivers has been added to the book. ([#2224](https://github.com/ariel-os/ariel-os/pull/2224))
+- A page about I2C drivers has been added to the book. ([#2223](https://github.com/ariel-os/ariel-os/pull/2223))
+- An initial page about power management has been added to the book. ([#2265](https://github.com/ariel-os/ariel-os/pull/2265))
+- (Sensor API) Labels have been added for the readings returned by magnetometers integrated in eCompasses. ([#2300](https://github.com/ariel-os/ariel-os/pull/2300))
+- UARTs defined in SBD files are now exposed via `ariel-os-boards`. ([#2181](https://github.com/ariel-os/ariel-os/pull/2181))
+- (RP) It is now possible to enable the internal pull-ups on I2C pins if necessary. ([#2248](https://github.com/ariel-os/ariel-os/pull/2248))
+- (ESP32) A device ID is now provided for ESP32 boards, backed by the eFuse MAC address. ([#2236](https://github.com/ariel-os/ariel-os/pull/2236))
+- Documentation about USB support has been added to the book. ([#2150](https://github.com/ariel-os/ariel-os/pull/2150))
+- Documentation about clocks and their configuration has been added to the book. ([#2165](https://github.com/ariel-os/ariel-os/pull/2165))
+- It is now possible to set a static BLE address that persists across reboots, for use cases like BLE beacons. ([#2166](https://github.com/ariel-os/ariel-os/pull/2166))
+- Documentation about the global allocator has been added to the book. ([#2148](https://github.com/ariel-os/ariel-os/pull/2148))
+- laze tasks available for the development of Ariel OS are now documented in the book. ([#2157](https://github.com/ariel-os/ariel-os/pull/2157))
+- The current BLE address can now be accessed using `ariel_os::ble::current_address()`. ([#2138](https://github.com/ariel-os/ariel-os/pull/2138))
+- Some documentation of the memory layout has been added to the book. ([#1422](https://github.com/ariel-os/ariel-os/pull/1422))
+
+### Changed
+
+- When using `define_peripherals!()`, it is in most cases no longer necessary to import `ariel_os::hal::peripherals`. ([#2120](https://github.com/ariel-os/ariel-os/pull/2120))
+- The `http-client` example's README now explains how to connect to servers that use certificates with RSA signatures. ([#2158](https://github.com/ariel-os/ariel-os/pull/2158))
+
+### New Supported Hardware
+
+- The STM32L072CZ MCU and the ST B-L072Z-LRWAN1 board are now supported. ([#2168](https://github.com/ariel-os/ariel-os/pull/2168))
+- The Espressif ESP32-C2 and ESP32-H2 MCUs, and the ESP8684-DevKitC-02 and ESP32-H2-DevKitM-1 boards are now supported. ([#2268](https://github.com/ariel-os/ariel-os/pull/2268))
+- The Waveshare ESP32-S3-ETH board is now supported. ([#2238](https://github.com/ariel-os/ariel-os/pull/2238))
+- The ESP32-S3R8 MCU and the Seeed Studio XIAO ESP32-S3 board are now supported. ([#2257](https://github.com/ariel-os/ariel-os/pull/2257))
+- The Makerdiary nRF9151 Connect Kit board is now supported. ([#2176](https://github.com/ariel-os/ariel-os/pull/2176))
+- The STM32G431RB MCU and the ST NUCLEO-G431RB board are now supported. ([#2154](https://github.com/ariel-os/ariel-os/pull/2154))
+
 ## [0.5.0] - 2026-06-04
 
 ### Release Highlights
@@ -292,7 +363,8 @@ internal polish that is not mentioned here.
 ## [0.1.0] - 2025-02-25
 
 <!-- next-url -->
-[Unreleased]: https://github.com/ariel-os/ariel-os/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/ariel-os/ariel-os/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ariel-os/ariel-os/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/ariel-os/ariel-os/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/ariel-os/ariel-os/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ariel-os/ariel-os/compare/v0.2.0...v0.3.0

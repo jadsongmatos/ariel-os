@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   nrf5340dk-app:
     chip: nrf5340-app
@@ -34,6 +34,14 @@ targets:
       # button3
       - pin: P0_09
         active: low
+
+    i2c:
+      # Only available when a shield is inserted.
+      - sda_pin: P1_02
+        scl_pin: P1_03
+        possible_peripherals:
+          - SERIAL0
+          - SERIAL1
 
   nrf5340dk-net:
     chip: nrf5340-net

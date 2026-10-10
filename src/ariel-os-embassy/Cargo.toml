@@ -1,6 +1,6 @@
 [package]
 name = "ariel-os-embassy"
-version = "0.5.0"
+version = "0.6.0"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -227,6 +227,7 @@ network-config-ipv4-static = []
 network-config-ipv6-static = []
 network-config-override = []
 override-usb-config = []
+custom-app-descriptor = ["ariel-os-hal/custom-app-descriptor"]
 rcc-config-override = ["ariel-os-hal/rcc-config-override"]
 
 executor-interrupt = ["ariel-os-hal/executor-interrupt"]

@@ -11,17 +11,19 @@ builders:
   parent: nrf52840
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_usb_device_port
 - name: arduino-uno-q
   parent: stm32u585ai
   provides:
+  - has_i2c_bus
   - has_leds
   - has_swi
   env:
     CARGO_ENV:
     - CONFIG_VBUS_DETECTION=false
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: arduino-uno-board
   parent: atmega328p
   provides:
@@ -38,6 +40,7 @@ builders:
   provides:
   - has_buttons
   - has_host_facing_uart
+  - has_i2c_bus
 - name: dfrobot-firebeetle2-esp32-c6
   parent: esp32c6fx4
   provides:
@@ -53,6 +56,7 @@ builders:
   parent: esp32-c3-mini-1
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_usb_cdc_acm_port
 - name: espressif-esp32-c3-lcdkit
@@ -68,6 +72,11 @@ builders:
   parent: esp-wroom-32
   provides:
   - has_buttons
+- name: espressif-esp32-h2-devkitm-1
+  parent: esp32-h2-mini-1-h4s
+  provides:
+  - has_buttons
+  - has_usb_cdc_acm_port
 - name: espressif-esp32-s2-devkitc-1
   parent: esp32-s2-solo-2
   provides:
@@ -79,10 +88,16 @@ builders:
   - has_buttons
   - has_usb_cdc_acm_port
   - has_usb_device_port
+- name: espressif-esp8684-devkitc-02
+  parent: esp8684-wroom-02c-h4
+  provides:
+  - has_buttons
+  - has_leds
 - name: heltec-wifi-lora-32-v3
   parent: esp32s3fx8
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
 - name: makerdiary-nrf52840-mdk-usb-dongle
   parent: nrf52840
@@ -92,17 +107,21 @@ builders:
   parent: nrf9151
   provides:
   - has_buttons
+  - has_host_facing_uart
 - name: native
   parent: native-chip
 - name: nordic-thingy-91-x-nrf9151
   parent: nrf9151
   provides:
   - has_buttons
+  - has_host_facing_uart
+  - has_i2c_bus
   - has_leds
 - name: nordic-thingy-91-x-nrf5340-app
   parent: nrf5340-app
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_usb_device_port
 - name: nordic-thingy-91-x-nrf5340-net
@@ -119,6 +138,7 @@ builders:
   provides:
   - has_buttons
   - has_host_facing_uart
+  - has_i2c_bus
   - has_leds
   - has_usb_device_port
 - name: nrf52dk
@@ -130,6 +150,7 @@ builders:
   parent: nrf5340-app
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_usb_device_port
 - name: nrf5340dk-net
@@ -139,11 +160,13 @@ builders:
   provides:
   - has_buttons
   - has_host_facing_uart
+  - has_i2c_bus
   - has_leds
 - name: nrf9160dk-nrf9160
   parent: nrf9160
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
 - name: particle-xenon
   parent: nrf52840
@@ -181,7 +204,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: seeedstudio-xiao-esp32-s3
   parent: esp32s3r8
   provides:
@@ -201,16 +224,27 @@ builders:
   provides:
   - has_leds
   - has_usb_device_port
+- name: st-b-l072z-lrwan1
+  parent: stm32l072cz
+  provides:
+  - has_buttons
+  - has_i2c_bus
+  - has_leds
+  - has_swi
+  env:
+    CARGO_ENV:
+    - CONFIG_SWI=WWDG
 - name: st-b-l475e-iot01a
   parent: stm32l475vg
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_swi
   - has_usb_device_port
   env:
     CARGO_ENV:
-    - CONFIG_SWI=UART5
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-c031c6
   parent: stm32c031c6
   provides:
@@ -219,7 +253,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-f042k6
   parent: stm32f042k6
   provides:
@@ -227,7 +261,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-f303re
   parent: stm32f303re
   provides:
@@ -236,7 +270,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-f401re
   parent: stm32f401re
   provides:
@@ -245,7 +279,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-f411re
   parent: stm32f411re
   provides:
@@ -254,7 +288,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-f767zi
   parent: stm32f767zi
   provides:
@@ -264,7 +298,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-g431rb
   parent: stm32g431rb
   provides:
@@ -273,7 +307,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-h753zi
   parent: stm32h753zi
   provides:
@@ -284,7 +318,7 @@ builders:
   - has_usb_device_port
   env:
     CARGO_ENV:
-    - CONFIG_SWI=UART5
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-h755zi-q
   parent: stm32h755zi
   provides:
@@ -295,7 +329,7 @@ builders:
   - has_usb_device_port
   env:
     CARGO_ENV:
-    - CONFIG_SWI=UART5
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-wb55
   parent: stm32wb55rg
   provides:
@@ -305,7 +339,7 @@ builders:
   - has_usb_device_port
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART1
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-wba55
   parent: stm32wba55cg
   provides:
@@ -314,7 +348,7 @@ builders:
   - has_swi
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: st-nucleo-wba65ri
   parent: stm32wba65ri
   provides:
@@ -324,22 +358,24 @@ builders:
   - has_usb_device_port
   env:
     CARGO_ENV:
-    - CONFIG_SWI=USART1
+    - CONFIG_SWI=WWDG
 - name: st-steval-mkboxpro
   parent: stm32u585ai
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_swi
   - has_usb_device_port
   env:
     CARGO_ENV:
     - CONFIG_VBUS_DETECTION=false
-    - CONFIG_SWI=USART2
+    - CONFIG_SWI=WWDG
 - name: stm32u083c-dk
   parent: stm32u083mc
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_leds
   - has_swi
   - has_usb_device_port
@@ -350,10 +386,12 @@ builders:
   parent: esp32-wroom-32d
   provides:
   - has_buttons
+  - has_i2c_bus
 - name: unihiker-k10
   parent: esp32-s3-wroom-1
   provides:
   - has_buttons
+  - has_i2c_bus
   - has_usb_cdc_acm_port
   - has_usb_device_port
 - name: waveshare-esp32-s3-eth

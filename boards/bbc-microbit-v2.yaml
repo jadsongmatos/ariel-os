@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   bbc-microbit-v2:
     chip: nrf52833
@@ -16,3 +16,9 @@ targets:
         tx_pin: P0_06 # UART_INT_RX
         possible_peripherals: [UARTE0, UARTE1]
         host_facing: true
+    i2c:
+      - sda_pin: P0_16
+        scl_pin: P0_08
+        possible_peripherals:
+          - TWISPI0
+          - TWISPI1

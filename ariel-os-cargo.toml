@@ -23,10 +23,12 @@ cyw43 = { git = "https://github.com/ariel-os/embassy", rev = "603583d9" }
 # Includes commit e349ebb that fixes some issues with some rpi-pico2-w boards, see https://github.com/ariel-os/ariel-os/issues/2192 .
 cyw43-pio = { git = "https://github.com/ariel-os/embassy", rev = "603583d9" }
 
+# branch = "embassy-embedded-hal-v0.5.0+ariel-os+flush-fix"
+embassy-embedded-hal = { git = "https://github.com/ariel-os/embassy", rev = "5211daf214eecd64c6754b760fecdb1f16622312" }
 # branch = "embassy-hal-internal-v0.3.0+ariel-os"
 embassy-hal-internal = { git = "https://github.com/ariel-os/embassy", rev = "0feffeb3c90748112a64c6570a39e1251311accb" }
-# branch = "embassy-nrf-v0.8.0+ariel-os"
-embassy-nrf = { git = "https://github.com/ariel-os/embassy", rev = "3940a79a29ae578a35625cae949bea473abf21d1" }
+# branch = "embassy-nrf-v0.9.0+ariel-os+cryptocell"
+embassy-nrf = { git = "https://github.com/ariel-os/embassy", rev = "cfaa7e92d1f79143b5e892442b1f2ff87b330770" }
 # branch = "embassy-net-v0.9.1+ariel-os": backport of https://github.com/embassy-rs/embassy/pull/6195
 embassy-net = { git = "https://github.com/ariel-os/embassy", rev = "37683fe299f12028e5a77af9f742f496da08afcd" }
 # branch = "embassy-rp-v0.8.0+ariel-os"

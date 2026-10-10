@@ -1,6 +1,6 @@
 [package]
 name = "ariel-os-log"
-version = "0.5.0"
+version = "0.6.0"
 edition.workspace = true
 rust-version.workspace = true
 repository.workspace = true
@@ -47,11 +47,17 @@ esp-println = { workspace = true, optional = true, features = [
 [target.'cfg(context = "esp32")'.dependencies]
 esp-println = { workspace = true, optional = true, features = ["esp32"] }
 
+[target.'cfg(context = "esp32c2")'.dependencies]
+esp-println = { workspace = true, optional = true, features = ["esp32c2"] }
+
 [target.'cfg(context = "esp32c3")'.dependencies]
 esp-println = { workspace = true, optional = true, features = ["esp32c3"] }
 
 [target.'cfg(context = "esp32c6")'.dependencies]
 esp-println = { workspace = true, optional = true, features = ["esp32c6"] }
+
+[target.'cfg(context = "esp32h2")'.dependencies]
+esp-println = { workspace = true, optional = true, features = ["esp32h2"] }
 
 [target.'cfg(context = "esp32s2")'.dependencies]
 esp-println = { workspace = true, optional = true, features = ["esp32s2"] }
@@ -75,6 +81,7 @@ debug-uart = ["dep:embassy-sync", "logging-over-uart"]
 defmt-rtt = ["ariel-os-debug/defmt-rtt"]
 # Using the debug channel as the transport
 logging-over-debug-channel = ["dep:ariel-os-debug"]
+logging-over-stdout = ["std"]
 logging-over-uart = ["esp-println?/uart"]
 logging-over-usb = ["esp-println?/jtag-serial"]
 # Connect log transports that are implemented inside Ariel OS' repo.

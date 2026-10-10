@@ -26,10 +26,16 @@ pub fn main() {
     );
     println!("cargo::rustc-check-cfg=cfg(context, values(\"espressif-esp32-devkitc\"))");
     println!(
+        "cargo::rustc-check-cfg=cfg(context, values(\"espressif-esp32-h2-devkitm-1\"))"
+    );
+    println!(
         "cargo::rustc-check-cfg=cfg(context, values(\"espressif-esp32-s2-devkitc-1\"))"
     );
     println!(
         "cargo::rustc-check-cfg=cfg(context, values(\"espressif-esp32-s3-devkitc-1\"))"
+    );
+    println!(
+        "cargo::rustc-check-cfg=cfg(context, values(\"espressif-esp8684-devkitc-02\"))"
     );
     println!("cargo::rustc-check-cfg=cfg(context, values(\"heltec-wifi-lora-32-v3\"))");
     println!(
@@ -72,6 +78,7 @@ pub fn main() {
     println!(
         "cargo::rustc-check-cfg=cfg(context, values(\"seeedstudio-xiao-nrf52840-plus\"))"
     );
+    println!("cargo::rustc-check-cfg=cfg(context, values(\"st-b-l072z-lrwan1\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"st-b-l475e-iot01a\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"st-nucleo-c031c6\"))");
     println!("cargo::rustc-check-cfg=cfg(context, values(\"st-nucleo-f042k6\"))");

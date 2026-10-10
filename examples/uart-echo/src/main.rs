@@ -12,10 +12,12 @@ use ariel_os::{
 
 use embedded_io_async::{Read as _, Write as _};
 
-type UartPeripherals = ariel_os_boards::pins::HOST_FACING_UART;
+ariel_os::hal::group_peripherals!(Peripherals {
+    uart: ariel_os_boards::pins::HOST_FACING_UART,
+});
 
 #[ariel_os::task(autostart, peripherals)]
-async fn main(peripherals: UartPeripherals) {
+async fn main(peripherals: Peripherals) {
     info!("Starting UART echo test");
 
     let mut config = hal::uart::Config::default();
@@ -27,7 +29,8 @@ async fn main(peripherals: UartPeripherals) {
     let mut tx_buf = [0u8; 32];
 
     let mut uart = peripherals
-        .with_config(&mut rx_buf, &mut tx_buf, config)
+        .uart
+        .build_with_config(&mut rx_buf, &mut tx_buf, config)
         .expect("Invalid UART configuration");
 
     uart.write_all(b"Ariel OS uart echo started!\r\n")

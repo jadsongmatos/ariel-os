@@ -63,9 +63,6 @@ pub fn device_id_bytes() -> Result<impl AsRef<[u8]>, impl core::error::Error> {
 /// The randomly generated identifiers aim to appear random, but can
 /// be traced back to the device ID it is calculated from.
 ///
-/// On devices that have access to globally unique EUI-48 identifiers, those are returned
-/// for interface indices up to the number of available identifiers.
-///
 /// # Errors
 ///
 /// Same as in [`device_id_bytes()`].

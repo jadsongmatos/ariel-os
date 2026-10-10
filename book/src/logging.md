@@ -78,12 +78,12 @@ Ariel OS's logger for `log` supports configuring the log level globally, but do
 Logging can use various transports, but currently only one can be used at a time.
 The table below presents those supported in Ariel OS and which hardware and host tool are required:
 
-| Logging transport                        | Supported               | laze module                  | Required hardware                                                                         | Required host tool                   |
-| ---------------------------------------- | :---------------------: | ---------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------ |
-| [Debug channel][debug-channel-book]      | Available on all chips  | `logging-over-debug-channel` | Debug probe attached to the debug interface                                               | Debug channel-enabled host tool      |
-| [USB CDC-ACM][usb-cdc-acm-glossary-book] | On ESP32 MCUs only      | `logging-over-usb`           | USB cable attached to the user USB port                                                   | Serial monitor                       |
-| [UART][uart-glossary-book]               | On ESP32 MCUs only      | `logging-over-uart`          | USB ⟷ UART adapter attached to the supported UART pins (may already be part of the board) | Serial monitor                       |
-| [Custom](#custom-logging-transports)     | Available on all chips  | `custom-logging-transport`   | Depends on the implemented transport                                                      | Depends on the implemented transport |
+| Logging transport                        | Supported               | laze module                       | Required hardware                                                                         | Required host tool                   |
+| ---------------------------------------- | :---------------------: | --------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------ |
+| [Debug channel][debug-channel-book]      | Available on all chips  | `logging-over-debug-channel`      | Debug probe attached to the debug interface                                               | Debug channel-enabled host tool      |
+| [USB CDC-ACM][usb-cdc-acm-glossary-book] | On ESP32 MCUs only      | `logging-over-usb`                | USB cable attached to the user USB port                                                   | Serial monitor                       |
+| [UART][uart-glossary-book]               | On ESP32 MCUs only      | `logging-over-uart`               | USB ⟷ UART adapter attached to the supported UART pins (may already be part of the board) | Serial monitor                       |
+| [Custom](#custom-logging-transports)     | Available on all chips  | `logging-over-custom-transport`   | Depends on the implemented transport                                                      | Depends on the implemented transport |
 
 On ESP32 devices, Ariel OS uses [`espflash`][espflah-cratesio] by default to obtain and print logs, whose usage is determined by the `espflash` [laze module][laze-modules-book].
 When `espflash` is selected at the time of compilation, `logging-over-debug-channel` is not enabled and one of the other available logging transports is used instead.
@@ -111,7 +111,7 @@ When `espflash` is selected at the time of compilation, `logging-over-debug-chan
 
 An application can connect a custom logging transport to send the logs through.
 
-This is enabled using the `custom-logging-transport` [laze module][laze-modules-book].
+This is enabled using the `logging-over-custom-transport` [laze module][laze-modules-book].
 This will give access to [`register_custom_transport()`][register_custom_transport_fn], which takes two arguments:
 
 - `write_bytes`: this function should take a reference to a slice of bytes (`&[u8]`) as input and send it through the transport.

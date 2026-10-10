@@ -30,7 +30,7 @@ macro_rules! define_peripherals {
 
         $($(
             #[allow(missing_docs, non_camel_case_types)]
-            pub type $peripheral_alias = peripherals::$peripheral_field;
+            pub type $peripheral_alias = $crate::__peripheral_alias_ty!($peripheral_field);
         )?)*
 
         impl $crate::hal::TakePeripherals<$peripherals> for &mut $crate::hal::OptionalPeripherals {
@@ -67,6 +67,28 @@ macro_rules! __peripheral_ty {
 #[macro_export]
 #[doc(hidden)]
 macro_rules! __peripheral_ty {
+    ($field:ident) => {
+        $crate::hal::peripherals::$field<'static>
+    };
+}
+
+// This helper macro creates the type a peripheral alias refers to. The alias names the peripheral
+// itself and not the embassy hal `Peri` wrapper. For `esp-hal` however, it does alias the
+// peripheral with its lifetime parameter, as there is no distinction between a peripheral and the
+// exclusive access to it, making it identical to `__peripheral_ty!()`.
+#[cfg(not(context = "esp"))]
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __peripheral_alias_ty {
+    ($field:ident) => {
+        $crate::hal::peripherals::$field
+    };
+}
+
+#[cfg(context = "esp")]
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __peripheral_alias_ty {
     ($field:ident) => {
         $crate::hal::peripherals::$field<'static>
     };
@@ -151,7 +173,7 @@ macro_rules! define_uarts {
 /// [`define_peripherals!`](crate::define_peripherals!) (that is, by using [`ariel_os::task(autostart,
 /// peripherals)`](ariel_os::task()) or the underlying `TakePeripherals` trait).
 ///
-/// The struct also has a method `.with_config()` that can be used to initialize an Ariel OS uart
+/// The struct also has a method `.build_with_config()` that can be used to initialize an Ariel OS uart
 /// instance.
 #[cfg(feature = "uart")]
 #[macro_export]
@@ -176,7 +198,7 @@ macro_rules! define_uart {
         }
 
         impl<'d> $name {
-            pub fn with_config(
+            pub fn build_with_config(
                 self,
                 rx_buf: &'d mut [u8],
                 tx_buf: &'d mut [u8],
@@ -221,6 +243,70 @@ macro_rules! _define_host_facing_uarts {
         compile_error!(
             "Larger numbers of host facing UARTs can be supported by expanding the `_define_host_facing_uarts` macro of ariel-os-hal to more cases."
         );
+    };
+}
+
+/// Repeatedly calls [`define_i2c_bus`] with each item of a comma separated list.
+#[cfg(feature = "i2c")]
+#[macro_export]
+macro_rules! define_i2c_buses {
+    ( $( { $($args:tt)+ } ),* $(,)? ) => {
+        $(
+            $crate::define_i2c_bus!{ $($args)+ }
+        )*
+    }
+}
+
+#[cfg(not(feature = "i2c"))]
+#[macro_export]
+macro_rules! define_i2c_buses {
+    ( $($_:tt)+ ) => {};
+}
+
+/// Creates a struct of the given `name`, containing all the peripherals needed to set up an I2C bus.
+///
+/// This also aliases the generated struct.
+#[macro_export]
+macro_rules! define_i2c_bus {
+    ( name: $name:ident, peripheral: $peripheral:ident, sda: $sda:ident, scl: $scl:ident, aliases: [$($alias:ident,)*] ) => {
+
+        // Because the dedicated I2C peripherals are all already taken,
+        // we can only package the data and clock in the struct
+        // line pins.
+        #[allow(nonstandard_style)]
+        pub struct $name {
+            sda: $crate::__peripheral_ty!($sda),
+            scl: $crate::__peripheral_ty!($scl),
+        }
+
+        impl $crate::hal::TakePeripherals<$name> for &mut $crate::hal::OptionalPeripherals {
+            fn take_peripherals(&mut self) -> $name {
+                $name {
+                    sda: self.$sda.take().unwrap(),
+                    scl: self.$scl.take().unwrap(),
+                }
+            }
+        }
+
+        impl $name {
+            pub fn build_with_config(self, config: $crate::hal::i2c::controller::Config) -> $crate::hal::i2c::controller::I2c {
+                $crate::hal::i2c::controller::$peripheral::new(self.sda, self.scl, config)
+            }
+        }
+
+        $(
+            $crate::define_i2c_alias!{$name = $alias}
+        )*
+
+    };
+}
+
+/// Aliases the sbd default name "I2c{n}" with sbd defined aliases.
+#[macro_export]
+macro_rules! define_i2c_alias {
+    ($name:ident = $alias:ident) => {
+        #[allow(nonstandard_style)]
+        pub type $alias = $name;
     };
 }
 

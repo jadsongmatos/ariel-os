@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   adafruit-feather-nrf52840-sense:
     chip: nrf52840
@@ -38,3 +38,10 @@ targets:
 
       # Only to be mapped if we start expressing aspects that are not user controllable:
       # * SW1 is a reset pin at P0_18/RESET
+
+    i2c:
+      - sda_pin: P0_12
+        scl_pin: P0_11
+        possible_peripherals:
+          - TWISPI0
+          - TWISPI1

@@ -78,12 +78,6 @@ functionalities:
     description:
 
 note_snippets:
-  - name: ethernet-identity-based-mac-address
-    content: |-
-      ### Ethernet Link
-
-      The Ethernet MAC address is derived from the device identity using [`if_index` `0`](https://ariel-os.github.io/ariel-os/dev/docs/api/ariel_os/identity/fn.interface_eui48.html).
-      A different index should therefore be used to generate other EUI-48 identifiers.
   - name: espressif-devkit-two-usb-ports-only-usb-otg
     content: |-
       ##### USB Ports
@@ -221,10 +215,7 @@ chips:
     support:
       gpio: supported
       debug_channel: supported
-      hwrng:
-        status: not_currently_supported
-        comments:
-          - no standalone RNG in the application core, only in the CryptoCell which is not currently supported
+      hwrng: supported
       i2c_controller: supported
       spi_main: supported
       uart: supported
@@ -261,10 +252,7 @@ chips:
     support:
       gpio: supported
       debug_channel: supported
-      hwrng:
-        status: not_currently_supported
-        comments:
-          - only available through the CryptoCell
+      hwrng: supported
       i2c_controller: supported
       spi_main: supported
       uart: needs_testing
@@ -282,10 +270,7 @@ chips:
     support:
       gpio: supported
       debug_channel: supported
-      hwrng:
-        status: not_currently_supported
-        comments:
-          - only available through the CryptoCell
+      hwrng: supported
       i2c_controller: supported
       spi_main: supported
       uart: supported
@@ -342,6 +327,74 @@ chips:
       i2c_controller: supported
       spi_main: needs_testing
       uart: needs_testing
+      logging: supported
+      storage:
+        status: not_currently_supported
+        comments:
+          - requires partitioning support
+      wifi:
+        status: supported
+      ble: supported
+      user_usb: not_available
+      ethernet_over_usb: not_available
+      ethernet: not_available
+
+  esp32c2:
+    name: ESP32-C2
+    manufacturer: Espressif
+    support:
+      gpio: supported
+      debug_channel: needs_testing
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: supported
+      logging: supported
+      storage:
+        status: not_currently_supported
+        comments:
+          - requires partitioning support
+      wifi:
+        status: supported
+      ble: supported
+      user_usb: not_available
+      ethernet_over_usb: not_available
+      ethernet: not_available
+
+  # Currently identical to esp32c2.
+  esp8684h2:
+    name: ESP8684H2
+    manufacturer: Espressif
+    support:
+      gpio: supported
+      debug_channel: needs_testing
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: supported
+      logging: supported
+      storage:
+        status: not_currently_supported
+        comments:
+          - requires partitioning support
+      wifi:
+        status: supported
+      ble: supported
+      user_usb: not_available
+      ethernet_over_usb: not_available
+      ethernet: not_available
+
+  # Currently identical to esp32c2.
+  esp8684h4:
+    name: ESP8684H4
+    manufacturer: Espressif
+    support:
+      gpio: supported
+      debug_channel: needs_testing
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: supported
       logging: supported
       storage:
         status: not_currently_supported
@@ -448,6 +501,80 @@ chips:
           - requires partitioning support
       wifi:
         status: supported
+      ble: supported
+      user_usb:
+        status: not_available
+        comments:
+          - no generic USB peripheral
+      ethernet_over_usb: not_available
+      ethernet: not_available
+
+  esp32h2:
+    name: ESP32-H2
+    manufacturer: Espressif
+    support:
+      gpio: supported
+      debug_channel: supported
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: supported
+      logging: supported
+      storage:
+        status: not_currently_supported
+        comments:
+          - requires partitioning support
+      wifi: not_available
+      ble: supported
+      user_usb:
+        status: not_available
+        comments:
+          - no generic USB peripheral
+      ethernet_over_usb: not_available
+      ethernet: not_available
+
+  # Currently identical to esp32h2.
+  esp32h2fh2s:
+    name: ESP32-H2FH2S
+    manufacturer: Espressif
+    support:
+      gpio: supported
+      debug_channel: supported
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: supported
+      logging: supported
+      storage:
+        status: not_currently_supported
+        comments:
+          - requires partitioning support
+      wifi: not_available
+      ble: supported
+      user_usb:
+        status: not_available
+        comments:
+          - no generic USB peripheral
+      ethernet_over_usb: not_available
+      ethernet: not_available
+
+  # Currently identical to esp32h2.
+  esp32h2fh4s:
+    name: ESP32-H2FH4S
+    manufacturer: Espressif
+    support:
+      gpio: supported
+      debug_channel: supported
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: supported
+      logging: supported
+      storage:
+        status: not_currently_supported
+        comments:
+          - requires partitioning support
+      wifi: not_available
       ble: supported
       user_usb:
         status: not_available
@@ -786,7 +913,7 @@ chips:
       ethernet:
         status: supported_with_caveats
         comments:
-          - currently only supported on a limited set of boards
+          - the pinout of [the RMII is currently fixed](../ethernet.md#using-microcontrollers-with-a-built-in-ethernet-mac)
       ethernet_over_usb:
         status: not_currently_supported
         comments:
@@ -802,8 +929,6 @@ chips:
           - removing items not supported
       wifi: not_available
       ble: not_available
-    note_snippets:
-      - ethernet-identity-based-mac-address
 
   stm32h755zi:
     name: STM32H755ZI
@@ -814,7 +939,7 @@ chips:
       ethernet:
         status: supported_with_caveats
         comments:
-          - currently only supported on a limited set of boards
+          - the pinout of [the RMII is currently fixed](../ethernet.md#using-microcontrollers-with-a-built-in-ethernet-mac)
       ethernet_over_usb:
         status: not_currently_supported
         comments:
@@ -830,8 +955,27 @@ chips:
           - removing items not supported
       wifi: not_available
       ble: not_available
-    note_snippets:
-      - ethernet-identity-based-mac-address
+
+  stm32l072cz:
+    name: STM32L072CZ
+    manufacturer: STMicroelectronics
+    support:
+      gpio: supported
+      debug_channel: supported
+      ethernet_over_usb:
+        status: not_currently_supported
+        comments:
+          - not enough RAM for the network stack
+      hwrng: supported
+      i2c_controller: supported
+      spi_main: supported
+      uart: needs_testing
+      logging: supported
+      storage: not_currently_supported
+      user_usb: needs_testing
+      wifi: not_available
+      ble: not_available
+      ethernet: not_available
 
   stm32l475vg:
     name: STM32L475VG
@@ -968,7 +1112,7 @@ chips:
       hwrng: supported
       i2c_controller: not_currently_supported
       spi_main: not_currently_supported
-      uart: not_currently_supported
+      uart: needs_testing
       logging: supported
       storage:
         status: supported_with_caveats
@@ -1204,6 +1348,18 @@ builders:
     note_snippets:
       - espressif-devkit-two-usb-ports-no-usb-otg
 
+  espressif-esp32-h2-devkitm-1:
+    chip: esp32h2fh4s
+    tier: "3"
+    support:
+    note_snippets:
+      - espressif-devkit-two-usb-ports-no-usb-otg
+
+  espressif-esp8684-devkitc-02:
+    chip: esp8684h4
+    tier: "3"
+    support:
+
   espressif-esp32-s2-devkitc-1:
     chip: esp32s2
     tier: "3"
@@ -1246,6 +1402,15 @@ builders:
     chip: stm32wle5jc
     tier: "3"
     support:
+
+  st-b-l072z-lrwan1:
+    chip: stm32l072cz
+    tier: "3"
+    support:
+      user_usb:
+        status: needs_testing
+        comments:
+          - solder bridges SB15 and SB16 need to be closed to connect the USB user connector to the MCU
 
   st-b-l475e-iot01a:
     chip: stm32l475vg
@@ -1526,6 +1691,16 @@ boards:
     builders:
       - espressif-esp32-c6-devkitc-1
 
+  - name: Espressif ESP32-H2-DevKitM-1
+    url: https://web.archive.org/web/20260420232231/https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32h2/esp32-h2-devkitm-1/index.html
+    builders:
+      - espressif-esp32-h2-devkitm-1
+
+  - name: Espressif ESP8684-DevKitC-02
+    url: https://web.archive.org/web/20260607024208/https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c2/esp8684-devkitc-02/user_guide.html
+    builders:
+      - espressif-esp8684-devkitc-02
+
   - name: Espressif ESP32-S2-DevKitC-1
     url: https://web.archive.org/web/20251022182104/https://www.espressif.com/en/dev-board/esp32-s2-devkitc-1-en
     builders:
@@ -1560,6 +1735,11 @@ boards:
     url: https://web.archive.org/web/20250802201959/https://wiki.seeedstudio.com/LoRa_E5_mini/
     builders:
       - seeedstudio-lora-e5-mini
+
+  - name: ST B-L072Z-LRWAN1
+    url: https://web.archive.org/web/20250402084429/https://www.st.com/en/evaluation-tools/b-l072z-lrwan1.html
+    builders:
+      - st-b-l072z-lrwan1
 
   - name: ST B-L475E-IOT01A
     url: https://web.archive.org/web/20250402084429/https://www.st.com/en/evaluation-tools/b-l475e-iot01a.html

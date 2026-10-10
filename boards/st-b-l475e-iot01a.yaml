@@ -1,11 +1,11 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   st-b-l475e-iot01a:
     chip: stm32l475vg
     flags:
       - has_usb_device_port
     ariel:
-      swi: UART5
+      swi: WWDG
     leds:
       # led0
       - pin: PA5
@@ -20,3 +20,15 @@ targets:
     buttons:
       # button0
       - pin: PC13
+    i2c:
+      # These pins have strong pull-ups suitable for I2C.
+      - sda_pin: PB9
+        scl_pin: PB8
+        possible_peripherals:
+          - I2C1
+        aliases:
+          - ArduinoI2c
+      - sda_pin: PB11
+        scl_pin: PB10
+        possible_peripherals:
+          - I2C2

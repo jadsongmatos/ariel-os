@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   bbc-microbit-v1:
     chip: nrf51822-xxaa
@@ -7,3 +7,11 @@ targets:
       - pin: P0_17
       # button1
       - pin: P0_26
+    # TODO: support for the TWI peripheral needs to be added to Ariel OS first.
+    # i2c:
+    #   - sda_pin: P0_30
+    #     scl_pin: P0_00
+    #     possible_peripherals:
+    #       # TODO: not currently supported by Embassy/Ariel OS.
+    #       # - TWI0
+    #       # - TWI1

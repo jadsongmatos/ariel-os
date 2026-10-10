@@ -1,6 +1,6 @@
 [package]
 name = "ariel-os-rp"
-version = "0.5.0"
+version = "0.6.0"
 edition.workspace = true
 rust-version.workspace = true
 repository.workspace = true
@@ -11,9 +11,10 @@ ariel-os-embassy-common = { workspace = true }
 ariel-os-log = { workspace = true }
 ariel-os-random = { workspace = true, optional = true }
 ariel-os-utils = { workspace = true }
+critical-section = { workspace = true }
 defmt = { workspace = true, optional = true }
 embassy-embedded-hal = { workspace = true, optional = true }
-embassy-net-driver-channel = { workspace = true, optional = true }
+embassy-net-driver-channel = { version = "0.3.2", default-features = false, optional = true }
 embassy-rp = { workspace = true, default-features = false, features = [
   "optfield",
   "rt",
@@ -36,6 +37,10 @@ bt-hci = { workspace = true, optional = true }
 
 [build-dependencies]
 ariel-os-buildutils = { workspace = true }
+
+# Gating with `ariel-os` so CI runs don't depend on it.
+[target.'cfg(context = "ariel-os")'.dependencies]
+ariel-os-rt = { workspace = true, features = ["memory-x"] }
 
 [target.'cfg(context = "cortex-m")'.dependencies]
 embassy-executor = { workspace = true, default-features = false, features = [

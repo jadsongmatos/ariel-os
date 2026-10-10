@@ -25,6 +25,17 @@ Boards having multiple MCUs, or MCUs with multiple compilation targets, still re
 - Create a new board description file `boards/<your-board-name>.yaml`.
   - It is usually best to copy and adapt an existing one.
   - `chip`: The board's chip, needs to correspond to an existing laze context in `laze-project.yml`.
+  - `i2c`: I2C buses present on the board.
+    To qualify, there should be at least either:
+
+      - I2C nodes on the board,
+      - A pair of pull-up resistors strong enough for I2C operation on the board (even if the lines are only exposed on connectors without other nodes on the board),
+      - A connector whose pins are dedicated to I2C (e.g., Grove, STEMMA QT, Qwiic, Arduino Modulino, mikroBUS),
+      - A well-known connector/header/pinout that conventionally includes I2C pins (e.g., Arduino headers, Seeed Studio XIAO pinout).
+
+    Some aliases should use the following conventions:
+      - `ArduinoI2c`: The I2C bus is exposed on Arduino headers.
+      - `QwiicI2c`: The I2C bus is exposed on a Qwiic connector.
 - In `doc/support_matrix.yml`:
   - Add an entry under `builders`.
   - Add an entry under `boards`, that references that new builder.
@@ -43,7 +54,7 @@ targets:
     # It contains e.g., the choice of SWI interrupt used for the embassy interrupt executor,
     # which is needed to be set on e.g., stm32 MCUs.
     ariel:
-      swi: USART2
+      swi: WWDG
     leds:
       # led0
       - pin: PB5
@@ -73,7 +84,7 @@ sbd-gen generate-ariel boards -o src/ariel-os-boards --mode update
 
 ### `stm32`
 
-- STM32 chips do not have a dedicated SWI, so you need to choose one. Select any unused interrupt, like one of the UARTs, and set the `targets.<board_name>.ariel.swi` field in the board description.
+- STM32 chips do not have a dedicated SWI, so you need to choose one. Select any unused interrupt, typically that of the WWDG, and set the `targets.<board_name>.ariel.swi` field in the board description.
 - Each STM32 MCU needs an entry for configuring the clock config, in `src/ariel-os-stm32/src/rcc.rs`'s `default()`.
 
 ### `esp32`
@@ -156,3 +167,4 @@ the processor architecture to `ariel-os-bench`, `ariel-os-rt`, `ariel-os-threads
 
 [sbd]: https://github.com/ariel-os/sbd
 [ci-builder-lists]: https://github.com/ariel-os/ariel-os/blob/5c23c04cd51c5cfebd561c9d27a47d4e26cdb649/.github/workflows/build.yml#L147-L168
+[i2c-pull-up-resistors-book]: ./i2c.md#configuring-other-settings

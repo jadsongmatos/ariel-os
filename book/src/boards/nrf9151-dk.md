@@ -35,7 +35,7 @@ laze build -b nrf9151-dk
 |Ethernet over USB|<span title="not available on this piece of hardware">–</span>|
 |Wi-Fi|<span title="not available on this piece of hardware">–</span>|
 |Bluetooth Low Energy|<span title="not available on this piece of hardware">–</span>|
-|Hardware Random Number Generator|<span title="available in hardware, but not currently supported by Ariel OS">❌</span>[^only-available-through-the-cryptocell]|
+|Hardware Random Number Generator|<span title="supported">✅</span>|
 |Persistent Storage|<span title="supported">✅</span>|
 
 <p>Legend:</p>
@@ -65,4 +65,3 @@ dt, dd {
 
 
   
-[^only-available-through-the-cryptocell]: Only available through the CryptoCell.

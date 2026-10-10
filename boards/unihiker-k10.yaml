@@ -1,4 +1,4 @@
-version: 0.4.0
+version: 0.4.1
 targets:
   unihiker-k10:
     chip: esp32-s3-wroom-1
@@ -10,3 +10,9 @@ targets:
       - pin: GPIO0
         aliases:
           - BOOT
+    i2c:
+      - sda_pin: GPIO47
+        scl_pin: GPIO48
+        possible_peripherals:
+          - I2C0
+          - I2C1

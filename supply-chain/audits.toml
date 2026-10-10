@@ -361,6 +361,12 @@ who = "Nils Ponsard <nils.ponsard@inria.fr>"
 criteria = "safe-to-deploy"
 delta = "0.3.31 -> 0.3.32"
 
+[[audits.heapless]]
+who = "chrysn <chrysn@fsfe.org>"
+criteria = "safe-to-deploy"
+delta = "0.9.1 -> 0.9.3"
+notes = "Newly introduced unsafe code was checked more carefully; changes of fixing unsoundness (e.g. by making functions unsafe and adding safety comments) were checked for rough consistency."
+
 [[audits.litrs]]
 who = "Antoine Lavandier <antoine.lavandier@inria.fr>"
 criteria = "safe-to-deploy"
@@ -372,6 +378,17 @@ who = "chrysn <chrysn@fsfe.org>"
 criteria = "safe-to-deploy"
 delta = "0.4.27 -> 0.4.28"
 
+[[audits.log]]
+who = "Koen Zandberg <koen@bergzand.net>"
+criteria = "safe-to-deploy"
+delta = "0.4.29 -> 0.4.33"
+notes = "No changes to unsafe code. Newly added code looks reasonable."
+
+[[audits.memsolve]]
+who = "Kaspar Schleiser <kaspar@schleiser.de>"
+criteria = "safe-to-deploy"
+delta = "0.3.0 -> 0.3.1"
+
 [[audits.minicbor-adapters]]
 who = "chrysn <chrysn@fsfe.org>"
 criteria = "safe-to-deploy"
@@ -382,6 +399,12 @@ who = "Nils Ponsard <nils.ponsard@inria.fr>"
 criteria = "safe-to-deploy"
 delta = "0.10.1 -> 0.10.2"
 
+[[audits.nrf-modem]]
+who = "chrysn <chrysn@fsfe.org>"
+criteria = "safe-to-deploy"
+delta = "0.10.2 -> 0.11.0"
+notes = "Changes look bigger than they are, and are best viewed with --ignore-all-space (as the latest version follows the new edition style of unsafe functions not automatically being unsafe inside, some attributes being unsafe that did not require annotation before, and more regular code formatting)."
+
 [[audits.nrfxlib-sys]]
 who = "chrysn <chrysn@fsfe.org>"
 criteria = "safe-to-deploy"
@@ -391,8 +414,19 @@ notes = "Review extends to the source of nrfxlib-sys only. The library ships als
 [[audits.nrfxlib-sys]]
 who = "chrysn <chrysn@fsfe.org>"
 criteria = "safe-to-deploy"
-delta = "3.0.3+3.0.2 -> 3.1.0+3.3.0"
+delta = "3.1.0+3.3.0 -> 4.0.0+3.4.0"
 notes = "Review extends to the source of nrfxlib-sys only. The library ships also proprietary C components, which were not (and, due to being closed source, can not) be reviewed."
+
+[[audits.num-complex]]
+who = "Koen Zandberg <koen@bergzand.net>"
+criteria = "safe-to-deploy"
+delta = "0.4.2 -> 0.4.6"
+notes = """
+Minor update of the crate:
+- Bumps the rust  edition to 2021
+- Adds support for rkyv and bytecheck as optional dependencies
+- Rest of the changes are all safe code
+"""
 
 [[audits.num-conv]]
 who = "Nils Ponsard <nils.ponsard@inria.fr>"
@@ -726,6 +760,12 @@ user-id = 1 # Alex Crichton (alexcrichton)
 start = "2019-03-04"
 end = "2026-09-02"
 
+[[trusted.ld-memory]]
+criteria = "safe-to-deploy"
+user-id = 4665 # Kaspar Schleiser (kaspar030)
+start = "2021-03-16"
+end = "2027-10-04"
+
 [[trusted.libc]]
 criteria = "safe-to-deploy"
 user-id = 55123 # rust-lang-owner
@@ -767,6 +807,12 @@ criteria = "safe-to-deploy"
 user-id = 189 # Andrew Gallant (BurntSushi)
 start = "2019-07-07"
 end = "2026-09-01"
+
+[[trusted.memsolve]]
+criteria = "safe-to-deploy"
+user-id = 407161 # Koen Zandberg (bergzand)
+start = "2026-06-16"
+end = "2027-10-04"
 
 [[trusted.new_debug_unreachable]]
 criteria = "safe-to-deploy"

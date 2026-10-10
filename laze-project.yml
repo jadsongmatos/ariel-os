@@ -54,6 +54,13 @@ contexts:
           CARGO_TARGET_DIR=${relroot}/${build-dir}/bin/${builder}/cargo
           CONFIG_EXECUTOR_STACKSIZE=${CONFIG_EXECUTOR_STACKSIZE}
           CONFIG_ISR_STACKSIZE=${CONFIG_ISR_STACKSIZE}
+          CHIP_NVM_SIZE_BYTES=${CHIP_NVM_SIZE_BYTES}
+          CHIP_NVM_START_ADDRESS=${CHIP_NVM_START_ADDRESS}
+          CHIP_NVM_PAGE_SIZE_BYTES=${CHIP_NVM_PAGE_SIZE_BYTES}
+          CHIP_EXTRA_SECTIONS=${CHIP_EXTRA_SECTIONS}
+          CHIP_RAM_START_ADDRESS=${CHIP_RAM_START_ADDRESS}
+          CHIP_RAM_SIZE_BYTES=${CHIP_RAM_SIZE_BYTES}
+          CHIP_LD_INCLUDES=${CHIP_LD_INCLUDES}
       PROFILE: release
       PROFILE_DIR: $(if("${PROFILE}"=="dev", "debug", "${PROFILE}"))
       PROBE_RS_PROTOCOL: swd
@@ -84,6 +91,10 @@ contexts:
         #
         # This is typically used to source additional shell scripts that set up extra environment.
         suffix: " && "
+      CHIP_EXTRA_SECTIONS:
+        joiner: ","
+      CHIP_LD_INCLUDES:
+        joiner: ","
       RUSTFLAGS_CONTEXTS:
         from: contexts
         prefix: --cfg context=\"
@@ -204,6 +215,11 @@ contexts:
       - has_device_identity
       - has_swi
       - sw/benchmark
+    env:
+      # Most common flash page size
+      CHIP_NVM_PAGE_SIZE_BYTES: "4096"
+      CHIP_NVM_START_ADDRESS: "0x0"
+      CHIP_RAM_START_ADDRESS: "0x20000000"
 
   - name: nrf51
     parent: nrf
@@ -211,6 +227,8 @@ contexts:
       - cortex-m0
     provides:
       - has_hwrng
+    env:
+      CHIP_NVM_PAGE_SIZE_BYTES: "1024"
 
   - name: nrf51822-xxaa
     parent: nrf51
@@ -218,6 +236,8 @@ contexts:
       - ram-tiny
     env:
       PROBE_RS_CHIP: nrf51822_xxAA
+      CHIP_NVM_SIZE_BYTES: "$(256*1024)"
+      CHIP_RAM_SIZE_BYTES: "$(16*1024)"
 
   - name: nrf52
     parent: nrf
@@ -238,6 +258,9 @@ contexts:
       - has_ble_nrf
     env:
       PROBE_RS_CHIP: nrf52832_xxAA
+      CHIP_NVM_PAGE_SIZE_BYTES: "512"
+      CHIP_NVM_SIZE_BYTES: "$(256 * 1024)"
+      CHIP_RAM_SIZE_BYTES: "$(64*1024)"
 
   - name: nrf52833
     parent: nrf52
@@ -247,6 +270,8 @@ contexts:
       - has_ble_nrf
     env:
       PROBE_RS_CHIP: nrf52833_xxAA
+      CHIP_NVM_SIZE_BYTES: "$(512 * 1024)"
+      CHIP_RAM_SIZE_BYTES: "$(128*1024)"
 
   - name: nrf52840
     parent: nrf52
@@ -256,6 +281,8 @@ contexts:
       - has_ble_nrf
     env:
       PROBE_RS_CHIP: nrf52840_xxAA
+      CHIP_NVM_SIZE_BYTES: "$(1024 * 1024)"
+      CHIP_RAM_SIZE_BYTES: "$(256*1024)"
 
   - name: nrf53
     parent: nrf
@@ -266,8 +293,11 @@ contexts:
       - cortex-m33f
     provides:
       - has_storage_support
+      - has_hwrng
     env:
       PROBE_RS_CHIP: nrf5340_xxAA
+      CHIP_NVM_SIZE_BYTES: "$(1024 * 1024)"
+      CHIP_RAM_SIZE_BYTES: "$(512*1024)"
 
   - name: nrf5340-net
     parent: nrf53
@@ -283,6 +313,11 @@ contexts:
       - usb
     env:
       PROBE_RS_CHIP: nrf5340_xxAA
+      CHIP_NVM_START_ADDRESS: "0x01000000"
+      CHIP_NVM_SIZE_BYTES: "$(256 * 1024)"
+      CHIP_NVM_PAGE_SIZE_BYTES: "2048"
+      CHIP_RAM_SIZE_BYTES: "$(64*1024)"
+      CHIP_RAM_START_ADDRESS: "0x21000000"
     help: nRF5340 Network Core support
 
   - name: nrf91
@@ -293,12 +328,16 @@ contexts:
       # For blinky the measured consumption is ~3milliAmps without nrf91-modem to ~4 microAmps with nrf91-modem.
       # Tested using the ppk2 in ampere mode on the Thingy:91 X and nrf9160dk.
       - ?nrf91-modem
+    env:
+      CHIP_NVM_SIZE_BYTES: "$(1024 * 1024)"
+      CHIP_RAM_SIZE_BYTES: "$(256 * 1024)"
 
   - name: nrf9160
     parent: nrf91
     provides:
       - has_nrf91_modem
       - has_storage_support
+      - has_hwrng
     env:
       PROBE_RS_CHIP: nRF9160_xxAA
 
@@ -307,6 +346,7 @@ contexts:
     provides:
       - has_nrf91_modem
       - has_storage_support
+      - has_hwrng
     env:
       PROBE_RS_CHIP: nRF9151_xxAA
 
@@ -319,6 +359,8 @@ contexts:
       - has_hwrng
       - has_swi
       - sw/benchmark
+    env:
+      CHIP_RAM_START_ADDRESS: "0x20000000"
 
   - name: rp2040
     parent: rp
@@ -327,9 +369,24 @@ contexts:
       - rp-link-arg
       - cortex-m0-plus
     provides:
+      - has_device_identity # Currently requires a Winbond memory chip to be used.
       - has_multi_core_support
       - has_storage_support
     env:
+      CHIP_NVM_START_ADDRESS: "0x10000100"
+      CHIP_NVM_PAGE_SIZE_BYTES: "256" # This is actually 4096! fix when doing ariel-os-boot
+      # The first page is taken by the second-stage bootloader.
+      CHIP_NVM_SIZE_BYTES: $((2048 * 1024) - 256)
+      # Regular RAM (256KiB) consists of 4 banks, SRAM0-SRAM3, with a striped
+      # mapping. This is usually good for performance, as it distributes load
+      # on those banks evenly.
+      # RAM banks 4 and 5 (4KiB each) use a direct mapping. They can be used to have
+      # memory areas dedicated for some specific job, improving predictability.
+      CHIP_RAM_SIZE_BYTES: $(256 * 1024)
+      CHIP_EXTRA_SECTIONS:
+        - "BOOT2:0x10000000:256"
+        - "SRAM4:0x20040000:4096"
+        - "SRAM5:0x20041000:4096"
       PROBE_RS_CHIP: RP2040
       CARGO_RUNNER:
         - ${SCRIPTS}/debug-openocd.sh
@@ -345,9 +402,24 @@ contexts:
     selects:
       - cortex-m33f
     provides:
+      - has_device_identity
       - has_multi_core_support
       - has_storage_support
     env:
+      CHIP_NVM_START_ADDRESS: "0x10000000"
+      CHIP_NVM_PAGE_SIZE_BYTES: "4096"
+      CHIP_NVM_SIZE_BYTES: $(2048 * 1024)
+      # Regular RAM (512KiB) consists of 8 banks, SRAM0-SRAM7, with a striped
+      # mapping. This is usually good for performance, as it distributes load
+      # on those banks evenly.
+      # RAM banks 8 and 9 (4KiB each) use a direct mapping. They can be used to have
+      # memory areas dedicated for some specific job, improving predictability.
+      CHIP_RAM_SIZE_BYTES: $(512 * 1024)
+      CHIP_EXTRA_SECTIONS:
+        - "SRAM4:0x20080000:4096"
+        - "SRAM5:0x20081000:4096"
+      CHIP_LD_INCLUDES:
+        - memory-rp235xa.x
       PROBE_RS_CHIP: RP235x
       CARGO_RUNNER:
         - ${SCRIPTS}/debug-openocd.sh
@@ -442,6 +514,7 @@ contexts:
       - xtensa
     provides:
       - has_ble_esp
+      - has_wifi_esp
     env:
       RUSTC_TARGET: xtensa-esp32-none-elf
       PROBE_RS_CHIP: esp32
@@ -470,6 +543,7 @@ contexts:
       - riscv
     provides:
       - has_ble_esp
+      - has_wifi_esp
       - has_usb_cdc_acm
       - sw/benchmark
     provides_unique: [c-function-abort]
@@ -488,6 +562,7 @@ contexts:
       - riscv
     provides:
       - has_ble_esp
+      - has_wifi_esp
       - has_usb_cdc_acm
       - sw/benchmark
     provides_unique: [c-function-abort]
@@ -503,10 +578,65 @@ contexts:
   - name: esp32-c6-wroom-1
     parent: esp32c6
 
+  - name: esp32c2
+    parent: esp
+    selects:
+      - riscv
+    provides:
+      - has_ble_esp
+      - has_wifi_esp
+      - sw/benchmark
+    provides_unique: [c-function-abort]
+    env:
+      RUSTC_TARGET: riscv32imc-unknown-none-elf
+      PROBE_RS_CHIP: esp32c2
+      PROBE_RS_PROTOCOL: jtag
+      CARGO_TARGET_PREFIX: CARGO_TARGET_RISCV32IMC_UNKNOWN_NONE_ELF
+
+  - name: esp8684h2
+    parent: esp32c2
+
+  - name: esp8684h4
+    parent: esp32c2
+
+  - name: esp8684-wroom-02c-h2
+    parent: esp8684h2
+
+  - name: esp8684-wroom-02c-h4
+    parent: esp8684h4
+
+  - name: esp32h2
+    parent: esp
+    selects:
+      - riscv
+    provides:
+      - has_ble_esp
+      - has_usb_cdc_acm
+      - sw/benchmark
+    provides_unique: [c-function-abort]
+    env:
+      RUSTC_TARGET: riscv32imac-unknown-none-elf
+      PROBE_RS_CHIP: esp32h2
+      PROBE_RS_PROTOCOL: jtag
+      CARGO_TARGET_PREFIX: CARGO_TARGET_RISCV32IMAC_UNKNOWN_NONE_ELF
+
+  - name: esp32h2fh2s
+    parent: esp32h2
+
+  - name: esp32h2fh4s
+    parent: esp32h2
+
+  - name: esp32-h2-mini-1-h2s
+    parent: esp32h2fh2s
+
+  - name: esp32-h2-mini-1-h4s
+    parent: esp32h2fh4s
+
   - name: esp32s2
     parent: esp
     selects:
       - xtensa
+      - has_wifi_esp
     provides:
       - sw/benchmark
     provides_unique: [c-function-abort]
@@ -539,6 +669,7 @@ contexts:
       - xtensa
     provides:
       - has_ble_esp
+      - has_wifi_esp
       # TODO: re-enable as soon as upstream peripheral drivers become `Send`
       # in combination with multi-core.
       # - has_multi_core_support
@@ -572,9 +703,6 @@ contexts:
     parent: ariel-os
     selects:
       - infini-core
-      # NOTE: semantically this should only be enabled when `logging` is
-      # enabled, but laze does not support conditions on contexts.
-      - logging-over-stdout
       - sw/threading
     provides:
       - has_device_identity
@@ -723,6 +851,24 @@ contexts:
       RUSTFLAGS:
         - --cfg capability=\"hw/stm32-hash-rng\"
         - --cfg capability=\"hw/stm32-usb-synopsys\"
+
+  - name: stm32l072cz
+    parent: stm32
+    selects:
+      - cortex-m0-plus
+      - ram-small
+    disables:
+      # not enough RAM for the network stack
+      - network
+    provides:
+      - has_hwrng
+    env:
+      isr_stacksize_required_default: "1024"
+      executor_stacksize_required_default: "4096"
+      PROBE_RS_CHIP: STM32L072CZTx
+      RUSTFLAGS:
+        - --cfg capability=\"hw/stm32-rng-lpuart1\"
+        - --cfg capability=\"hw/stm32-usb\"
 
   - name: stm32l475vg
     parent: stm32
@@ -1620,6 +1766,12 @@ modules:
       global:
         FEATURES:
           - ariel-os/nrf91-modem
+        # 32 KiB recommended by [nrf-modem](https://github.com/diondokter/nrf-modem?tab=readme-ov-file#memory)
+        NRF91_MODEM_IPC_BYTES: "32768"
+        CARGO_ENV:
+          - CHIP_RAM_RESERVE_BYTES=${NRF91_MODEM_IPC_BYTES}
+        CHIP_EXTRA_SECTIONS:
+          - "MODEM:0x20000000:${NRF91_MODEM_IPC_BYTES}"
 
   - name: usb
     disables:
@@ -1858,9 +2010,14 @@ modules:
     selects:
       - doc-only
 
+  - name: has_wifi_esp
+    selects:
+      - doc-only
+
   - name: wifi-esp
     selects:
       - alloc
+      - has_wifi_esp
       - multi-core:
           - core-affinity
       - network
@@ -2002,7 +2159,7 @@ modules:
       # Optional as we want to be able to disable it in applications.
       - ?panic-printing
 
-  - name: custom-logging-transport
+  - name: logging-over-custom-transport
     help: Connect a custom logging transport to pass the logs through.
     provides_unique:
       - logging-transport
@@ -2012,7 +2169,7 @@ modules:
     env:
       global:
         FEATURES:
-          - ariel-os/custom-logging-transport
+          - ariel-os/logging-over-custom-transport
 
   # Ordered by priority.
   # Currently the logging transports are mutually exclusive.
@@ -2088,6 +2245,10 @@ modules:
       - native-chip
     provides_unique:
       - logging-transport
+    env:
+      global:
+        FEATURES:
+          - ariel-os/logging-over-stdout
 
   - name: logging-over-usb
     help: use USB CDC-ACM as logging transport
@@ -2112,6 +2273,7 @@ modules:
       - nrf52dk
       - rp2040
       - stm32u083c-dk
+      - st-b-l072z-lrwan1
     selects:
       - context::esp:
           - esp-println
@@ -2131,6 +2293,7 @@ modules:
       - nrf52dk
       - rp2040
       - stm32u083c-dk
+      - st-b-l072z-lrwan1
     selects:
       - log # We could later support defmt as well
     env:
@@ -2276,6 +2439,14 @@ modules:
     context: esp
     selects:
       - single-core
+
+  - name: custom-app-descriptor
+    help: let the application emit its own app descriptor (ESP32-only)
+    context: esp # Could be extended to other families if later needed.
+    env:
+      global:
+        FEATURES:
+          - ariel-os/custom-app-descriptor
 
   - name: embedded-test-only
     help: This application produces no .elf (it only has *embedded* tests)
